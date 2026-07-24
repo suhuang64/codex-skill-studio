@@ -663,7 +663,11 @@
                     v-if="data.projects.some((project) => !project.groupId)"
                     label="未分组"
                     value="ungrouped"
-                  />
+                  >
+                    <div class="group-option">
+                      <i style="background: #94a3b8"></i><span>未分组</span>
+                    </div>
+                  </el-option>
                 </el-select>
               </div>
               <div class="apple-select project-sort-select">
