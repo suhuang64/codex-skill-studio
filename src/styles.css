@@ -408,6 +408,11 @@ main {
 .history-icon svg {
   width: 22px;
 }
+.project-folder-icon {
+  color: var(--group-color);
+  background: color-mix(in srgb, var(--group-color) 14%, white);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--group-color) 14%, transparent);
+}
 .health {
   display: flex;
   align-items: center;
@@ -648,6 +653,62 @@ main {
   font-weight: 600;
   letter-spacing: 0;
   text-transform: uppercase;
+}
+.apple-dialog-form .el-form-item__label {
+  margin-bottom: 7px;
+  color: #4f5f74;
+  font-size: 12px;
+  font-weight: 600;
+}
+.apple-dialog-input .el-input__wrapper,
+.apple-dialog-input .el-input-group__append {
+  min-height: 34px;
+  border: 1px solid rgba(202, 213, 229, 0.72);
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    0 4px 12px rgba(36, 58, 91, 0.035);
+}
+.apple-dialog-input .el-input__wrapper {
+  border-radius: 11px;
+  padding: 0 12px;
+}
+.apple-dialog-input.el-input-group--append .el-input__wrapper {
+  border-right: 0;
+  border-radius: 11px 0 0 11px;
+}
+.apple-dialog-input .el-input-group__append {
+  overflow: hidden;
+  border-left-color: rgba(202, 213, 229, 0.54);
+  border-radius: 0 11px 11px 0;
+  padding: 0;
+}
+.apple-dialog-input .el-input__inner {
+  color: #273246;
+  font-weight: 500;
+}
+.apple-dialog-input .el-input__inner::placeholder {
+  color: #98a5b8;
+}
+.apple-dialog-input .el-input-group__append .el-button {
+  min-height: 32px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.18);
+  color: #4f5f74;
+  font-weight: 600;
+}
+.apple-dialog-input .el-input-group__append .el-button:hover,
+.apple-dialog-input .el-input-group__append .el-button:focus-visible {
+  background: rgba(10, 132, 255, 0.1);
+  color: #007aff;
+}
+.apple-dialog-input:focus-within .el-input__wrapper,
+.apple-dialog-input:focus-within .el-input-group__append {
+  border-color: rgba(10, 132, 255, 0.34);
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.14);
 }
 .project-group-list {
   display: flex;
@@ -1167,6 +1228,11 @@ main {
   color: #71b4ff;
   background: rgba(40, 103, 174, 0.28);
 }
+:root[data-theme='dark'] .project-folder-icon {
+  color: var(--group-color);
+  background: color-mix(in srgb, var(--group-color) 22%, rgba(18, 31, 51, 0.72));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--group-color) 26%, transparent);
+}
 :root[data-theme='dark'] .project-control-strip {
   border-color: rgba(132, 166, 211, 0.18);
   background: rgba(18, 31, 51, 0.52);
@@ -1201,6 +1267,31 @@ main {
 }
 :root[data-theme='dark'] .apple-color-value {
   color: #a8b5c8;
+}
+:root[data-theme='dark'] .apple-dialog-form .el-form-item__label {
+  color: #b8c5d8;
+}
+:root[data-theme='dark'] .apple-dialog-input .el-input__wrapper,
+:root[data-theme='dark'] .apple-dialog-input .el-input-group__append {
+  border-color: rgba(132, 166, 211, 0.22);
+  background: rgba(18, 31, 51, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 6px 16px rgba(0, 0, 0, 0.14);
+}
+:root[data-theme='dark'] .apple-dialog-input .el-input__inner {
+  color: #edf4ff;
+}
+:root[data-theme='dark'] .apple-dialog-input .el-input__inner::placeholder {
+  color: #8796aa;
+}
+:root[data-theme='dark'] .apple-dialog-input .el-input-group__append .el-button {
+  color: #d6e1f1;
+}
+:root[data-theme='dark'] .apple-dialog-input:focus-within .el-input__wrapper,
+:root[data-theme='dark'] .apple-dialog-input:focus-within .el-input-group__append {
+  border-color: rgba(10, 132, 255, 0.38);
+  background: rgba(255, 255, 255, 0.08);
 }
 :root[data-theme='dark'] .row-group-select,
 :root[data-theme='dark'] .apple-row-button,

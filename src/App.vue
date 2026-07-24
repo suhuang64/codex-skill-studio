@@ -24,6 +24,7 @@
     Sort,
     Tools,
     MoreFilled,
+    FolderOpened,
   } from '@element-plus/icons-vue'
   import { api, patch, post, remove } from './api'
 
@@ -727,7 +728,12 @@
               </header>
               <div v-show="!isGroupCollapsed(group.id)" class="project-group-list">
                 <article v-for="p in group.projects" :key="p.id" class="entity-row project-row">
-                  <div class="folder-icon"><FolderAdd /></div>
+                  <div
+                    class="folder-icon project-folder-icon"
+                    :style="{ '--group-color': group.color }"
+                  >
+                    <FolderAdd />
+                  </div>
                   <div class="entity-main">
                     <div class="entity-title-line">
                       <h3>{{ p.name }}</h3>
@@ -1054,11 +1060,14 @@
   </div>
 
   <el-dialog v-model="projectDialog" title="添加项目" width="560"
-    ><el-form label-position="top"
+    ><el-form class="apple-dialog-form project-form" label-position="top"
       ><el-form-item label="项目目录"
-        ><el-input v-model="projectForm.path" placeholder="选择任意本地项目目录"
+        ><el-input
+          v-model="projectForm.path"
+          class="apple-dialog-input project-path-input"
+          placeholder="选择任意本地项目目录"
           ><template #append
-            ><el-button @click="choose(projectForm, '选择要管理的项目目录')"
+            ><el-button :icon="FolderOpened" @click="choose(projectForm, '选择要管理的项目目录')"
               >选择…</el-button
             ></template
           ></el-input
@@ -1066,6 +1075,7 @@
       ><el-form-item label="显示名称（可选）"
         ><el-input
           v-model="projectForm.name"
+          class="apple-dialog-input"
           placeholder="默认使用目录名" /></el-form-item></el-form
     ><template #footer
       ><el-button @click="projectDialog = false">取消</el-button
@@ -1124,8 +1134,9 @@
     ></el-dialog
   >
   <el-dialog v-model="groupDialog" :title="editingGroupId ? '编辑项目组' : '新建项目组'" width="480"
-    ><el-form class="group-form" label-position="top"
-      ><el-form-item label="项目组名称"><el-input v-model.trim="groupForm.name" /></el-form-item
+    ><el-form class="apple-dialog-form group-form" label-position="top"
+      ><el-form-item label="项目组名称"
+        ><el-input v-model.trim="groupForm.name" class="apple-dialog-input" /></el-form-item
       ><el-form-item label="标识颜色"
         ><div class="apple-color-field">
           <el-color-picker v-model="groupForm.color" :predefine="groupColorPresets" />
