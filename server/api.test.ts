@@ -23,11 +23,10 @@ describe('无请求体管理接口', () => {
       path: projectPath,
       skillsDir: join(projectPath, '.codex', 'skills'),
     })
-    const app = createApp(store, { token: 'test-token' })
+    const app = createApp(store)
     const response = await app.inject({
       method: 'DELETE',
       url: `/api/projects/${project.id}`,
-      headers: { 'x-session-token': 'test-token' },
     })
     expect(response.statusCode).toBe(200)
     expect(store.projects()).toHaveLength(0)
@@ -82,23 +81,22 @@ describe('配置导入导出', () => {
     )
     sourceStore.run('INSERT INTO bundle_skills VALUES(?,?)', bundleId, skill.id)
     sourceStore.run('INSERT INTO project_bundles VALUES(?,?)', project.id, bundleId)
-    const sourceApp = createApp(sourceStore, { token: 'source-token' })
+    const sourceApp = createApp(sourceStore)
     const exported = JSON.parse(
       (
         await sourceApp.inject({
           method: 'GET',
           url: '/api/export',
-          headers: { 'x-session-token': 'source-token' },
         })
       ).body,
     )
     await sourceApp.close()
     const targetStore = new Store(join(root, 'target-data', 'manager.db'))
-    const targetApp = createApp(targetStore, { token: 'target-token' })
+    const targetApp = createApp(targetStore)
     const imported = await targetApp.inject({
       method: 'POST',
       url: '/api/import',
-      headers: { 'x-session-token': 'target-token', 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json' },
       payload: exported,
     })
     expect(imported.statusCode).toBe(200)

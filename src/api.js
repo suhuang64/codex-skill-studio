@@ -1,11 +1,5 @@
-const params = new URLSearchParams(location.search);
-const token = params.get('token') || sessionStorage.getItem('skill-manager-token') || '';
-if (token) {
-    sessionStorage.setItem('skill-manager-token', token);
-    history.replaceState({}, '', location.pathname);
-}
 export async function api(path, options = {}) {
-    const headers = { 'x-session-token': token };
+    const headers = {};
     if (options.body !== undefined)
         headers['Content-Type'] = 'application/json';
     const response = await fetch(`/api${path}`, {

@@ -12,13 +12,9 @@ import type { Plan, Source } from './types.js'
 
 const run = promisify(execFile)
 const pathInput = z.object({ path: z.string().min(1), name: z.string().trim().optional() })
-export function createApp(store: Store, options: { token: string; staticRoot?: string }) {
+export function createApp(store: Store, options: { staticRoot?: string } = {}) {
   const app = Fastify({ logger: false })
   const plans = new Map<string, Plan>()
-  app.addHook('onRequest', async (req, reply) => {
-    if (req.url.startsWith('/api') && req.headers['x-session-token'] !== options.token)
-      return reply.code(403).send({ error: '无效的本地会话' })
-  })
   app.setErrorHandler((error, _req, reply) =>
     reply
       .code((error as any).statusCode || 400)
