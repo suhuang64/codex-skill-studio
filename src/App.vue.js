@@ -62,7 +62,19 @@ async function rescan() { try {
 catch (e) {
     ElMessage.error(e.message);
 } }
-async function confirmDelete(kind, row) { await ElMessageBox.confirm(`只会取消注册“${row.name}”，不会删除磁盘上的真实目录。`, '确认取消注册', { type: 'warning', confirmButtonText: '取消注册', cancelButtonText: '保留' }); await remove(`/${kind}/${row.id}`); await refresh(); ElMessage.success('已取消注册'); }
+async function confirmDelete(kind, row) { try {
+    await ElMessageBox.confirm(`只会取消注册“${row.name}”，不会删除磁盘上的真实目录。`, '确认取消注册', { type: 'warning', confirmButtonText: '取消注册', cancelButtonText: '保留' });
+    await remove(`/${kind}/${row.id}`);
+    if (selectedProject.value === row.id)
+        selectedProject.value = '';
+    await refresh();
+    ElMessage.success('已取消注册');
+}
+catch (e) {
+    if (e === 'cancel' || e === 'close')
+        return;
+    ElMessage.error(`取消注册失败：${e?.message || e}`);
+} }
 async function toggleFavorite(row) { await patch(`/skills/${row.id}`, { favorite: !row.favorite }); await refresh(); }
 async function stage(action) { if (!selectedProject.value || !selectedSkills.value.length)
     return ElMessage.warning('请先选择项目并勾选技能'); try {
