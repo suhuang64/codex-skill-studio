@@ -477,10 +477,28 @@
             >
           </div>
         </div>
-        <div class="tile-grid">
-          <article v-for="p in data.projects" :key="p.id" class="project-card glass">
-            <div class="project-top">
+        <div class="content-frame glass">
+          <div class="entity-list scroll-list">
+            <article v-for="p in data.projects" :key="p.id" class="entity-row project-row">
               <div class="folder-icon"><FolderAdd /></div>
+              <div class="entity-main">
+                <div class="entity-title-line">
+                  <h3>{{ p.name }}</h3>
+                  <code>{{ p.path }}</code>
+                </div>
+                <div class="entity-target">
+                  <span>链接目标</span><code>{{ p.skillsDir }}</code>
+                </div>
+              </div>
+              <el-select
+                class="entity-select"
+                :model-value="p.groupId"
+                clearable
+                placeholder="未分组"
+                @change="assignGroup(p, $event || null)"
+                ><el-option v-for="g in data.groups" :key="g.id" :label="g.name" :value="g.id"
+              /></el-select>
+              <el-button @click="openProjectSkills(p)">管理技能</el-button>
               <el-dropdown trigger="click"
                 ><el-button text>•••</el-button
                 ><template #dropdown
@@ -491,25 +509,11 @@
                   ></template
                 ></el-dropdown
               >
-            </div>
-            <h3>{{ p.name }}</h3>
-            <p>{{ p.path }}</p>
-            <el-select
-              :model-value="p.groupId"
-              clearable
-              placeholder="未分组"
-              @change="assignGroup(p, $event || null)"
-              style="width: 100%"
-              ><el-option v-for="g in data.groups" :key="g.id" :label="g.name" :value="g.id"
-            /></el-select>
-            <div class="target">
-              <span>链接目标</span><code>{{ p.skillsDir }}</code>
-            </div>
-            <el-button @click="openProjectSkills(p)">管理技能</el-button>
-          </article>
-          <button class="add-card glass" @click="projectDialog = true">
-            <Plus /><span>添加新项目</span>
-          </button>
+            </article>
+            <button class="entity-row add-row" @click="projectDialog = true">
+              <Plus /><span>添加新项目</span>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -575,7 +579,7 @@
               :data="filteredSkills"
               row-key="id"
               @selection-change="selectedSkills = $event"
-              height="560"
+              height="100%"
               empty-text="当前筛选没有技能"
               ><el-table-column type="selection" width="48" /><el-table-column
                 label="技能"
@@ -659,27 +663,31 @@
           </div>
           <el-button type="primary" :icon="Plus" @click="bundleDialog = true">新建组合</el-button>
         </div>
-        <div class="tile-grid">
-          <article v-for="b in data.bundles" :key="b.id" class="bundle-card glass">
-            <div class="bundle-icon"><Collection /></div>
-            <h3>{{ b.name }}</h3>
-            <p>{{ b.description || '暂无说明' }}</p>
-            <div class="bundle-skills">
-              <el-tag v-for="sid in b.skillIds.slice(0, 5)" :key="sid" round>{{
-                data.skills.find((s) => s.id === sid)?.name
-              }}</el-tag>
-            </div>
-            <footer>
-              <span>{{ b.skillIds.length }} 个技能 · {{ b.projectIds.length }} 个项目</span>
-              <div>
-                <el-button text @click="openBundleApply(b)">应用到项目</el-button
-                ><el-button text type="danger" @click="confirmDelete('bundles', b)">删除</el-button>
+        <div class="content-frame glass">
+          <div class="entity-list scroll-list">
+            <article v-for="b in data.bundles" :key="b.id" class="entity-row bundle-row">
+              <div class="bundle-icon"><Collection /></div>
+              <div class="entity-main">
+                <div class="entity-title-line">
+                  <h3>{{ b.name }}</h3>
+                  <span>{{ b.description || '暂无说明' }}</span>
+                </div>
+                <div class="bundle-skills">
+                  <el-tag v-for="sid in b.skillIds.slice(0, 5)" :key="sid" round>{{
+                    data.skills.find((s) => s.id === sid)?.name
+                  }}</el-tag>
+                </div>
               </div>
-            </footer>
-          </article>
-          <button class="add-card glass" @click="bundleDialog = true">
-            <Plus /><span>创建技能组合</span>
-          </button>
+              <span class="entity-meta"
+                >{{ b.skillIds.length }} 个技能 · {{ b.projectIds.length }} 个项目</span
+              >
+              <el-button @click="openBundleApply(b)">应用到项目</el-button
+              ><el-button text type="danger" @click="confirmDelete('bundles', b)">删除</el-button>
+            </article>
+            <button class="entity-row add-row" @click="bundleDialog = true">
+              <Plus /><span>创建技能组合</span>
+            </button>
+          </div>
         </div>
       </section>
 

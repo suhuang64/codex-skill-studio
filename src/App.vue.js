@@ -782,20 +782,22 @@ else if (__VLS_ctx.tab === 'projects') {
     var __VLS_81;
     var __VLS_82;
     __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "tile-grid" },
+        ...{ class: "content-frame glass" },
     });
-    /** @type {__VLS_StyleScopedClasses['tile-grid']} */ ;
+    /** @type {__VLS_StyleScopedClasses['content-frame']} */ ;
+    /** @type {__VLS_StyleScopedClasses['glass']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "entity-list scroll-list" },
+    });
+    /** @type {__VLS_StyleScopedClasses['entity-list']} */ ;
+    /** @type {__VLS_StyleScopedClasses['scroll-list']} */ ;
     for (const [p] of __VLS_vFor((__VLS_ctx.data.projects))) {
         __VLS_asFunctionalElement1(__VLS_intrinsics.article, __VLS_intrinsics.article)({
             key: (p.id),
-            ...{ class: "project-card glass" },
+            ...{ class: "entity-row project-row" },
         });
-        /** @type {__VLS_StyleScopedClasses['project-card']} */ ;
-        /** @type {__VLS_StyleScopedClasses['glass']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-            ...{ class: "project-top" },
-        });
-        /** @type {__VLS_StyleScopedClasses['project-top']} */ ;
+        /** @type {__VLS_StyleScopedClasses['entity-row']} */ ;
+        /** @type {__VLS_StyleScopedClasses['project-row']} */ ;
         __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
             ...{ class: "folder-icon" },
         });
@@ -806,102 +808,46 @@ else if (__VLS_ctx.tab === 'projects') {
         // @ts-ignore
         const __VLS_87 = __VLS_asFunctionalComponent1(__VLS_86, new __VLS_86({}));
         const __VLS_88 = __VLS_87({}, ...__VLS_functionalComponentArgsRest(__VLS_87));
-        let __VLS_91;
-        /** @ts-ignore @type { | typeof __VLS_components.elDropdown | typeof __VLS_components.ElDropdown | typeof __VLS_components['el-dropdown'] | typeof __VLS_components.elDropdown | typeof __VLS_components.ElDropdown | typeof __VLS_components['el-dropdown']} */
-        elDropdown;
-        // @ts-ignore
-        const __VLS_92 = __VLS_asFunctionalComponent1(__VLS_91, new __VLS_91({
-            trigger: "click",
-        }));
-        const __VLS_93 = __VLS_92({
-            trigger: "click",
-        }, ...__VLS_functionalComponentArgsRest(__VLS_92));
-        const { default: __VLS_96 } = __VLS_94.slots;
-        let __VLS_97;
-        /** @ts-ignore @type { | typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components['el-button'] | typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components['el-button']} */
-        elButton;
-        // @ts-ignore
-        const __VLS_98 = __VLS_asFunctionalComponent1(__VLS_97, new __VLS_97({
-            text: true,
-        }));
-        const __VLS_99 = __VLS_98({
-            text: true,
-        }, ...__VLS_functionalComponentArgsRest(__VLS_98));
-        const { default: __VLS_102 } = __VLS_100.slots;
-        // @ts-ignore
-        [data,];
-        var __VLS_100;
-        {
-            const { dropdown: __VLS_103 } = __VLS_94.slots;
-            let __VLS_104;
-            /** @ts-ignore @type { | typeof __VLS_components.elDropdownMenu | typeof __VLS_components.ElDropdownMenu | typeof __VLS_components['el-dropdown-menu'] | typeof __VLS_components.elDropdownMenu | typeof __VLS_components.ElDropdownMenu | typeof __VLS_components['el-dropdown-menu']} */
-            elDropdownMenu;
-            // @ts-ignore
-            const __VLS_105 = __VLS_asFunctionalComponent1(__VLS_104, new __VLS_104({}));
-            const __VLS_106 = __VLS_105({}, ...__VLS_functionalComponentArgsRest(__VLS_105));
-            const { default: __VLS_109 } = __VLS_107.slots;
-            let __VLS_110;
-            /** @ts-ignore @type { | typeof __VLS_components.elDropdownItem | typeof __VLS_components.ElDropdownItem | typeof __VLS_components['el-dropdown-item'] | typeof __VLS_components.elDropdownItem | typeof __VLS_components.ElDropdownItem | typeof __VLS_components['el-dropdown-item']} */
-            elDropdownItem;
-            // @ts-ignore
-            const __VLS_111 = __VLS_asFunctionalComponent1(__VLS_110, new __VLS_110({
-                ...{ 'onClick': {} },
-            }));
-            const __VLS_112 = __VLS_111({
-                ...{ 'onClick': {} },
-            }, ...__VLS_functionalComponentArgsRest(__VLS_111));
-            let __VLS_115;
-            const __VLS_116 = {
-                /** @type {typeof __VLS_115.click} */
-                onClick: (...[$event]) => {
-                    if (!!(__VLS_ctx.tab === 'overview'))
-                        throw 0;
-                    if (!(__VLS_ctx.tab === 'projects'))
-                        throw 0;
-                    return (__VLS_ctx.confirmDelete('projects', p));
-                    // @ts-ignore
-                    [confirmDelete,];
-                },
-            };
-            const { default: __VLS_117 } = __VLS_113.slots;
-            // @ts-ignore
-            [];
-            var __VLS_113;
-            var __VLS_114;
-            // @ts-ignore
-            [];
-            var __VLS_107;
-            // @ts-ignore
-            [];
-        }
-        // @ts-ignore
-        [];
-        var __VLS_94;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+            ...{ class: "entity-main" },
+        });
+        /** @type {__VLS_StyleScopedClasses['entity-main']} */ ;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+            ...{ class: "entity-title-line" },
+        });
+        /** @type {__VLS_StyleScopedClasses['entity-title-line']} */ ;
         __VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({});
         (p.name);
-        __VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({});
+        __VLS_asFunctionalElement1(__VLS_intrinsics.code, __VLS_intrinsics.code)({});
         (p.path);
-        let __VLS_118;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+            ...{ class: "entity-target" },
+        });
+        /** @type {__VLS_StyleScopedClasses['entity-target']} */ ;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({});
+        __VLS_asFunctionalElement1(__VLS_intrinsics.code, __VLS_intrinsics.code)({});
+        (p.skillsDir);
+        let __VLS_91;
         /** @ts-ignore @type { | typeof __VLS_components.elSelect | typeof __VLS_components.ElSelect | typeof __VLS_components['el-select'] | typeof __VLS_components.elSelect | typeof __VLS_components.ElSelect | typeof __VLS_components['el-select']} */
         elSelect;
         // @ts-ignore
-        const __VLS_119 = __VLS_asFunctionalComponent1(__VLS_118, new __VLS_118({
+        const __VLS_92 = __VLS_asFunctionalComponent1(__VLS_91, new __VLS_91({
             ...{ 'onChange': {} },
+            ...{ class: "entity-select" },
             modelValue: (p.groupId),
             clearable: true,
             placeholder: "未分组",
-            ...{ style: {} },
         }));
-        const __VLS_120 = __VLS_119({
+        const __VLS_93 = __VLS_92({
             ...{ 'onChange': {} },
+            ...{ class: "entity-select" },
             modelValue: (p.groupId),
             clearable: true,
             placeholder: "未分组",
-            ...{ style: {} },
-        }, ...__VLS_functionalComponentArgsRest(__VLS_119));
-        let __VLS_123;
-        const __VLS_124 = {
-            /** @type {typeof __VLS_123.change} */
+        }, ...__VLS_functionalComponentArgsRest(__VLS_92));
+        let __VLS_96;
+        const __VLS_97 = {
+            /** @type {typeof __VLS_96.change} */
             onChange: (...[$event]) => {
                 if (!!(__VLS_ctx.tab === 'overview'))
                     throw 0;
@@ -909,52 +855,46 @@ else if (__VLS_ctx.tab === 'projects') {
                     throw 0;
                 return (__VLS_ctx.assignGroup(p, $event || null));
                 // @ts-ignore
-                [assignGroup,];
+                [data, assignGroup,];
             },
         };
-        const { default: __VLS_125 } = __VLS_121.slots;
+        /** @type {__VLS_StyleScopedClasses['entity-select']} */ ;
+        const { default: __VLS_98 } = __VLS_94.slots;
         for (const [g] of __VLS_vFor((__VLS_ctx.data.groups))) {
-            let __VLS_126;
+            let __VLS_99;
             /** @ts-ignore @type { | typeof __VLS_components.elOption | typeof __VLS_components.ElOption | typeof __VLS_components['el-option']} */
             elOption;
             // @ts-ignore
-            const __VLS_127 = __VLS_asFunctionalComponent1(__VLS_126, new __VLS_126({
+            const __VLS_100 = __VLS_asFunctionalComponent1(__VLS_99, new __VLS_99({
                 key: (g.id),
                 label: (g.name),
                 value: (g.id),
             }));
-            const __VLS_128 = __VLS_127({
+            const __VLS_101 = __VLS_100({
                 key: (g.id),
                 label: (g.name),
                 value: (g.id),
-            }, ...__VLS_functionalComponentArgsRest(__VLS_127));
+            }, ...__VLS_functionalComponentArgsRest(__VLS_100));
             // @ts-ignore
             [data,];
         }
         // @ts-ignore
         [];
-        var __VLS_121;
-        var __VLS_122;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-            ...{ class: "target" },
-        });
-        /** @type {__VLS_StyleScopedClasses['target']} */ ;
-        __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({});
-        __VLS_asFunctionalElement1(__VLS_intrinsics.code, __VLS_intrinsics.code)({});
-        (p.skillsDir);
-        let __VLS_131;
+        var __VLS_94;
+        var __VLS_95;
+        let __VLS_104;
         /** @ts-ignore @type { | typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components['el-button'] | typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components['el-button']} */
         elButton;
         // @ts-ignore
-        const __VLS_132 = __VLS_asFunctionalComponent1(__VLS_131, new __VLS_131({
+        const __VLS_105 = __VLS_asFunctionalComponent1(__VLS_104, new __VLS_104({
             ...{ 'onClick': {} },
         }));
-        const __VLS_133 = __VLS_132({
+        const __VLS_106 = __VLS_105({
             ...{ 'onClick': {} },
-        }, ...__VLS_functionalComponentArgsRest(__VLS_132));
-        let __VLS_136;
-        const __VLS_137 = {
-            /** @type {typeof __VLS_136.click} */
+        }, ...__VLS_functionalComponentArgsRest(__VLS_105));
+        let __VLS_109;
+        const __VLS_110 = {
+            /** @type {typeof __VLS_109.click} */
             onClick: (...[$event]) => {
                 if (!!(__VLS_ctx.tab === 'overview'))
                     throw 0;
@@ -965,11 +905,82 @@ else if (__VLS_ctx.tab === 'projects') {
                 [openProjectSkills,];
             },
         };
-        const { default: __VLS_138 } = __VLS_134.slots;
+        const { default: __VLS_111 } = __VLS_107.slots;
         // @ts-ignore
         [];
-        var __VLS_134;
-        var __VLS_135;
+        var __VLS_107;
+        var __VLS_108;
+        let __VLS_112;
+        /** @ts-ignore @type { | typeof __VLS_components.elDropdown | typeof __VLS_components.ElDropdown | typeof __VLS_components['el-dropdown'] | typeof __VLS_components.elDropdown | typeof __VLS_components.ElDropdown | typeof __VLS_components['el-dropdown']} */
+        elDropdown;
+        // @ts-ignore
+        const __VLS_113 = __VLS_asFunctionalComponent1(__VLS_112, new __VLS_112({
+            trigger: "click",
+        }));
+        const __VLS_114 = __VLS_113({
+            trigger: "click",
+        }, ...__VLS_functionalComponentArgsRest(__VLS_113));
+        const { default: __VLS_117 } = __VLS_115.slots;
+        let __VLS_118;
+        /** @ts-ignore @type { | typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components['el-button'] | typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components['el-button']} */
+        elButton;
+        // @ts-ignore
+        const __VLS_119 = __VLS_asFunctionalComponent1(__VLS_118, new __VLS_118({
+            text: true,
+        }));
+        const __VLS_120 = __VLS_119({
+            text: true,
+        }, ...__VLS_functionalComponentArgsRest(__VLS_119));
+        const { default: __VLS_123 } = __VLS_121.slots;
+        // @ts-ignore
+        [];
+        var __VLS_121;
+        {
+            const { dropdown: __VLS_124 } = __VLS_115.slots;
+            let __VLS_125;
+            /** @ts-ignore @type { | typeof __VLS_components.elDropdownMenu | typeof __VLS_components.ElDropdownMenu | typeof __VLS_components['el-dropdown-menu'] | typeof __VLS_components.elDropdownMenu | typeof __VLS_components.ElDropdownMenu | typeof __VLS_components['el-dropdown-menu']} */
+            elDropdownMenu;
+            // @ts-ignore
+            const __VLS_126 = __VLS_asFunctionalComponent1(__VLS_125, new __VLS_125({}));
+            const __VLS_127 = __VLS_126({}, ...__VLS_functionalComponentArgsRest(__VLS_126));
+            const { default: __VLS_130 } = __VLS_128.slots;
+            let __VLS_131;
+            /** @ts-ignore @type { | typeof __VLS_components.elDropdownItem | typeof __VLS_components.ElDropdownItem | typeof __VLS_components['el-dropdown-item'] | typeof __VLS_components.elDropdownItem | typeof __VLS_components.ElDropdownItem | typeof __VLS_components['el-dropdown-item']} */
+            elDropdownItem;
+            // @ts-ignore
+            const __VLS_132 = __VLS_asFunctionalComponent1(__VLS_131, new __VLS_131({
+                ...{ 'onClick': {} },
+            }));
+            const __VLS_133 = __VLS_132({
+                ...{ 'onClick': {} },
+            }, ...__VLS_functionalComponentArgsRest(__VLS_132));
+            let __VLS_136;
+            const __VLS_137 = {
+                /** @type {typeof __VLS_136.click} */
+                onClick: (...[$event]) => {
+                    if (!!(__VLS_ctx.tab === 'overview'))
+                        throw 0;
+                    if (!(__VLS_ctx.tab === 'projects'))
+                        throw 0;
+                    return (__VLS_ctx.confirmDelete('projects', p));
+                    // @ts-ignore
+                    [confirmDelete,];
+                },
+            };
+            const { default: __VLS_138 } = __VLS_134.slots;
+            // @ts-ignore
+            [];
+            var __VLS_134;
+            var __VLS_135;
+            // @ts-ignore
+            [];
+            var __VLS_128;
+            // @ts-ignore
+            [];
+        }
+        // @ts-ignore
+        [];
+        var __VLS_115;
         // @ts-ignore
         [];
     }
@@ -983,10 +994,10 @@ else if (__VLS_ctx.tab === 'projects') {
                 // @ts-ignore
                 [projectDialog,];
             } },
-        ...{ class: "add-card glass" },
+        ...{ class: "entity-row add-row" },
     });
-    /** @type {__VLS_StyleScopedClasses['add-card']} */ ;
-    /** @type {__VLS_StyleScopedClasses['glass']} */ ;
+    /** @type {__VLS_StyleScopedClasses['entity-row']} */ ;
+    /** @type {__VLS_StyleScopedClasses['add-row']} */ ;
     let __VLS_139;
     /** @ts-ignore @type { | typeof __VLS_components.Plus} */
     Plus;
@@ -1323,14 +1334,14 @@ else if (__VLS_ctx.tab === 'skills') {
         ...{ 'onSelectionChange': {} },
         data: (__VLS_ctx.filteredSkills),
         rowKey: "id",
-        height: "560",
+        height: "100%",
         emptyText: "当前筛选没有技能",
     }));
     const __VLS_220 = __VLS_219({
         ...{ 'onSelectionChange': {} },
         data: (__VLS_ctx.filteredSkills),
         rowKey: "id",
-        height: "560",
+        height: "100%",
         emptyText: "当前筛选没有技能",
     }, ...__VLS_functionalComponentArgsRest(__VLS_219));
     let __VLS_223;
@@ -1760,16 +1771,22 @@ else if (__VLS_ctx.tab === 'bundles') {
     var __VLS_315;
     var __VLS_316;
     __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
-        ...{ class: "tile-grid" },
+        ...{ class: "content-frame glass" },
     });
-    /** @type {__VLS_StyleScopedClasses['tile-grid']} */ ;
+    /** @type {__VLS_StyleScopedClasses['content-frame']} */ ;
+    /** @type {__VLS_StyleScopedClasses['glass']} */ ;
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "entity-list scroll-list" },
+    });
+    /** @type {__VLS_StyleScopedClasses['entity-list']} */ ;
+    /** @type {__VLS_StyleScopedClasses['scroll-list']} */ ;
     for (const [b] of __VLS_vFor((__VLS_ctx.data.bundles))) {
         __VLS_asFunctionalElement1(__VLS_intrinsics.article, __VLS_intrinsics.article)({
             key: (b.id),
-            ...{ class: "bundle-card glass" },
+            ...{ class: "entity-row bundle-row" },
         });
-        /** @type {__VLS_StyleScopedClasses['bundle-card']} */ ;
-        /** @type {__VLS_StyleScopedClasses['glass']} */ ;
+        /** @type {__VLS_StyleScopedClasses['entity-row']} */ ;
+        /** @type {__VLS_StyleScopedClasses['bundle-row']} */ ;
         __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
             ...{ class: "bundle-icon" },
         });
@@ -1780,9 +1797,17 @@ else if (__VLS_ctx.tab === 'bundles') {
         // @ts-ignore
         const __VLS_321 = __VLS_asFunctionalComponent1(__VLS_320, new __VLS_320({}));
         const __VLS_322 = __VLS_321({}, ...__VLS_functionalComponentArgsRest(__VLS_321));
+        __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+            ...{ class: "entity-main" },
+        });
+        /** @type {__VLS_StyleScopedClasses['entity-main']} */ ;
+        __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+            ...{ class: "entity-title-line" },
+        });
+        /** @type {__VLS_StyleScopedClasses['entity-title-line']} */ ;
         __VLS_asFunctionalElement1(__VLS_intrinsics.h3, __VLS_intrinsics.h3)({});
         (b.name);
-        __VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({});
+        __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({});
         (b.description || '暂无说明');
         __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
             ...{ class: "bundle-skills" },
@@ -1809,22 +1834,21 @@ else if (__VLS_ctx.tab === 'bundles') {
             // @ts-ignore
             [];
         }
-        __VLS_asFunctionalElement1(__VLS_intrinsics.footer, __VLS_intrinsics.footer)({});
-        __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({});
+        __VLS_asFunctionalElement1(__VLS_intrinsics.span, __VLS_intrinsics.span)({
+            ...{ class: "entity-meta" },
+        });
+        /** @type {__VLS_StyleScopedClasses['entity-meta']} */ ;
         (b.skillIds.length);
         (b.projectIds.length);
-        __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({});
         let __VLS_331;
         /** @ts-ignore @type { | typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components['el-button'] | typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components['el-button']} */
         elButton;
         // @ts-ignore
         const __VLS_332 = __VLS_asFunctionalComponent1(__VLS_331, new __VLS_331({
             ...{ 'onClick': {} },
-            text: true,
         }));
         const __VLS_333 = __VLS_332({
             ...{ 'onClick': {} },
-            text: true,
         }, ...__VLS_functionalComponentArgsRest(__VLS_332));
         let __VLS_336;
         const __VLS_337 = {
@@ -1901,10 +1925,10 @@ else if (__VLS_ctx.tab === 'bundles') {
                 // @ts-ignore
                 [bundleDialog,];
             } },
-        ...{ class: "add-card glass" },
+        ...{ class: "entity-row add-row" },
     });
-    /** @type {__VLS_StyleScopedClasses['add-card']} */ ;
-    /** @type {__VLS_StyleScopedClasses['glass']} */ ;
+    /** @type {__VLS_StyleScopedClasses['entity-row']} */ ;
+    /** @type {__VLS_StyleScopedClasses['add-row']} */ ;
     let __VLS_347;
     /** @ts-ignore @type { | typeof __VLS_components.Plus} */
     Plus;
