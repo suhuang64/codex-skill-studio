@@ -10,7 +10,9 @@
     "start": "npm run build && node dist/server/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "vue-tsc -b && tsc -p server/tsconfig.json --noEmit"
+    "typecheck": "vue-tsc -b && tsc -p server/tsconfig.json --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,vue,css}\" \"server/**/*.ts\" \"*.{ts,json,md,yaml}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,vue,css}\" \"server/**/*.ts\" \"*.{ts,json,md,yaml}\""
   },
   "engines": {
     "node": ">=24"
@@ -31,6 +33,7 @@
     "@vitejs/plugin-vue": "^6.0.8",
     "@vitest/coverage-v8": "^4.1.10",
     "concurrently": "^10.0.3",
+    "prettier": "^3.9.6",
     "tsx": "^4.23.1",
     "typescript": "^5.9.3",
     "vite": "^8.1.5",

@@ -8,7 +8,10 @@ export async function api(path, options = {}) {
     const headers = { 'x-session-token': token };
     if (options.body !== undefined)
         headers['Content-Type'] = 'application/json';
-    const response = await fetch(`/api${path}`, { ...options, headers: { ...headers, ...options.headers } });
+    const response = await fetch(`/api${path}`, {
+        ...options,
+        headers: { ...headers, ...options.headers },
+    });
     const data = await response.json().catch(() => ({}));
     if (!response.ok)
         throw new Error(data.error || '请求失败');
