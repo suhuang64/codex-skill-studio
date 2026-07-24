@@ -20,10 +20,16 @@
     EditPen,
     Delete,
     MagicStick,
+    Filter,
+    Sort,
+    Tools,
+    MoreFilled,
   } from '@element-plus/icons-vue'
   import { api, patch, post, remove } from './api'
 
   type AnyRow = Record<string, any>
+  type ProjectGroupSection = AnyRow & { projects: AnyRow[]; managed: boolean }
+  type ProjectSelectGroup = AnyRow & { projects: AnyRow[] }
   type ThemeMode = 'system' | 'light' | 'dark'
 
   const THEME_STORAGE_KEY = 'skill-studio-theme'
@@ -42,6 +48,15 @@
     { label: '跟随系统', value: 'system' },
     { label: '浅色', value: 'light' },
     { label: '深色', value: 'dark' },
+  ]
+  const groupColorPresets = [
+    '#007AFF',
+    '#34C759',
+    '#FF9500',
+    '#FF3B30',
+    '#AF52DE',
+    '#5AC8FA',
+    '#8E8E93',
   ]
   const linkStatusText: Record<string, string> = {
     linked: '已链接',
@@ -182,7 +197,7 @@
   const errors = computed(() => data.audit.filter((a) => a.level === 'error').length)
   const groupById = computed(() => new Map(data.groups.map((group) => [group.id, group])))
   const projectGroupSections = computed(() => {
-    const sections = data.groups.map((group) => ({
+    const sections: ProjectGroupSection[] = data.groups.map((group) => ({
       ...group,
       projects: data.projects.filter((project) => project.groupId === group.id),
       managed: true,
@@ -211,7 +226,7 @@
     })
   })
   const projectSelectGroups = computed(() => {
-    const sections = data.groups.map((group) => ({
+    const sections: ProjectSelectGroup[] = data.groups.map((group) => ({
       ...group,
       projects: data.projects.filter((project) => project.groupId === group.id),
     }))
@@ -624,30 +639,44 @@
         </div>
         <div class="content-frame project-frame glass">
           <div class="project-controls">
-            <div>
-              <el-select v-model="projectGroupFilter" aria-label="筛选项目组" style="width: 210px">
-                <el-option label="全部项目组" value="all" />
-                <el-option
-                  v-for="group in data.groups"
-                  :key="group.id"
-                  :label="group.name"
-                  :value="group.id"
+            <div class="project-control-strip" role="group" aria-label="项目视图控制">
+              <div class="apple-select project-filter-select">
+                <el-icon><Filter /></el-icon>
+                <el-select
+                  v-model="projectGroupFilter"
+                  aria-label="筛选项目组"
+                  popper-class="apple-select-popper"
                 >
-                  <div class="group-option">
-                    <i :style="{ background: group.color }"></i><span>{{ group.name }}</span>
-                  </div>
-                </el-option>
-                <el-option
-                  v-if="data.projects.some((project) => !project.groupId)"
-                  label="未分组"
-                  value="ungrouped"
-                />
-              </el-select>
-              <el-select v-model="projectGroupSort" aria-label="项目组排序" style="width: 180px">
-                <el-option label="按名称排序" value="name" />
-                <el-option label="按项目数排序" value="count" />
-                <el-option label="按创建时间排序" value="created" />
-              </el-select>
+                  <el-option label="全部项目组" value="all" />
+                  <el-option
+                    v-for="group in data.groups"
+                    :key="group.id"
+                    :label="group.name"
+                    :value="group.id"
+                  >
+                    <div class="group-option">
+                      <i :style="{ background: group.color }"></i><span>{{ group.name }}</span>
+                    </div>
+                  </el-option>
+                  <el-option
+                    v-if="data.projects.some((project) => !project.groupId)"
+                    label="未分组"
+                    value="ungrouped"
+                  />
+                </el-select>
+              </div>
+              <div class="apple-select project-sort-select">
+                <el-icon><Sort /></el-icon>
+                <el-select
+                  v-model="projectGroupSort"
+                  aria-label="项目组排序"
+                  popper-class="apple-select-popper"
+                >
+                  <el-option label="按名称排序" value="name" />
+                  <el-option label="按项目数排序" value="count" />
+                  <el-option label="按创建时间排序" value="created" />
+                </el-select>
+              </div>
             </div>
             <span>{{ data.groups.length }} 个项目组 · {{ data.projects.length }} 个项目</span>
           </div>
@@ -705,35 +734,42 @@
                       <code>{{ p.path }}</code>
                     </div>
                   </div>
-                  <el-select
-                    class="entity-select"
-                    :model-value="p.groupId"
-                    clearable
-                    placeholder="未分组"
-                    @change="assignGroup(p, $event || null)"
-                  >
-                    <el-option
-                      v-for="option in data.groups"
-                      :key="option.id"
-                      :label="option.name"
-                      :value="option.id"
+                  <div class="project-row-controls">
+                    <div class="apple-select row-group-select">
+                      <el-select
+                        :model-value="p.groupId"
+                        clearable
+                        placeholder="未分组"
+                        popper-class="apple-select-popper"
+                        @change="assignGroup(p, $event || null)"
+                      >
+                        <el-option
+                          v-for="option in data.groups"
+                          :key="option.id"
+                          :label="option.name"
+                          :value="option.id"
+                        >
+                          <div class="group-option">
+                            <i :style="{ background: option.color }"></i
+                            ><span>{{ option.name }}</span>
+                          </div>
+                        </el-option>
+                      </el-select>
+                    </div>
+                    <el-button class="apple-row-button" :icon="Tools" @click="openProjectSkills(p)"
+                      >管理技能</el-button
                     >
-                      <div class="group-option">
-                        <i :style="{ background: option.color }"></i><span>{{ option.name }}</span>
-                      </div>
-                    </el-option>
-                  </el-select>
-                  <el-button @click="openProjectSkills(p)">管理技能</el-button>
-                  <el-dropdown trigger="click"
-                    ><el-button text>•••</el-button
-                    ><template #dropdown
-                      ><el-dropdown-menu
-                        ><el-dropdown-item @click="confirmDelete('projects', p)"
-                          >取消注册</el-dropdown-item
-                        ></el-dropdown-menu
-                      ></template
-                    ></el-dropdown
-                  >
+                    <el-dropdown trigger="click"
+                      ><el-button class="apple-icon-button" :icon="MoreFilled" text />
+                      <template #dropdown
+                        ><el-dropdown-menu
+                          ><el-dropdown-item @click="confirmDelete('projects', p)"
+                            >取消注册</el-dropdown-item
+                          ></el-dropdown-menu
+                        ></template
+                      ></el-dropdown
+                    >
+                  </div>
                 </article>
                 <div v-if="!group.projects.length" class="empty-group">暂无项目</div>
               </div>
@@ -1088,10 +1124,14 @@
     ></el-dialog
   >
   <el-dialog v-model="groupDialog" :title="editingGroupId ? '编辑项目组' : '新建项目组'" width="480"
-    ><el-form label-position="top"
+    ><el-form class="group-form" label-position="top"
       ><el-form-item label="项目组名称"><el-input v-model.trim="groupForm.name" /></el-form-item
       ><el-form-item label="标识颜色"
-        ><el-color-picker v-model="groupForm.color" /></el-form-item></el-form
+        ><div class="apple-color-field">
+          <el-color-picker v-model="groupForm.color" :predefine="groupColorPresets" />
+          <span class="apple-color-value">{{ groupForm.color }}</span>
+        </div></el-form-item
+      ></el-form
     ><template #footer
       ><el-button @click="groupDialog = false">取消</el-button
       ><el-button

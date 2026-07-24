@@ -458,11 +458,79 @@ main {
 }
 .project-controls > div {
   display: flex;
-  gap: 10px;
 }
 .project-controls > span {
   color: #748196;
   font-size: 12px;
+}
+.project-control-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.46);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.84),
+    0 8px 22px rgba(36, 58, 91, 0.06);
+}
+.apple-select {
+  height: 32px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 7px 0 9px;
+  border-radius: 10px;
+  color: #5f6f86;
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+.project-filter-select {
+  width: 178px;
+}
+.project-sort-select {
+  width: 160px;
+}
+.apple-select:hover {
+  background: rgba(255, 255, 255, 0.58);
+  color: #273246;
+}
+.apple-select:focus-within {
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.16);
+  color: #1e2a3a;
+}
+.apple-select > .el-icon {
+  flex: none;
+  font-size: 14px;
+  opacity: 0.76;
+}
+.apple-select .el-select {
+  flex: 1;
+  min-width: 0;
+}
+.apple-select .el-select__wrapper {
+  min-height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none !important;
+}
+.apple-select .el-select__selected-item,
+.apple-select .el-select__placeholder {
+  color: inherit;
+  font-weight: 500;
+}
+.apple-select .el-select__suffix {
+  color: inherit;
+  opacity: 0.66;
+}
+.apple-select-popper {
+  border-radius: 14px;
 }
 .project-groups {
   padding-top: 10px;
@@ -525,6 +593,61 @@ main {
 }
 .group-actions .el-button + .el-button {
   margin-left: 0;
+}
+.group-form .el-form-item__label {
+  margin-bottom: 7px;
+  color: #4f5f74;
+  font-size: 12px;
+  font-weight: 600;
+}
+.apple-color-field {
+  width: fit-content;
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px 4px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    0 8px 20px rgba(36, 58, 91, 0.06);
+}
+.apple-color-field .el-color-picker {
+  width: 28px;
+  height: 28px;
+}
+.apple-color-field .el-color-picker__trigger {
+  width: 28px;
+  height: 28px;
+  padding: 3px;
+  border: 0;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow:
+    inset 0 0 0 1px rgba(68, 83, 105, 0.13),
+    0 1px 2px rgba(30, 41, 59, 0.08);
+}
+.apple-color-field .el-color-picker__color {
+  overflow: hidden;
+  border: 0;
+  border-radius: 7px;
+}
+.apple-color-field .el-color-picker__icon {
+  display: none;
+}
+.apple-color-field:focus-within {
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.16);
+}
+.apple-color-value {
+  color: #5f6f86;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: uppercase;
 }
 .project-group-list {
   display: flex;
@@ -604,6 +727,66 @@ main {
 .entity-title-line span {
   flex: 1;
   min-width: 0;
+}
+.project-row-controls {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.row-group-select {
+  width: 178px;
+  height: 34px;
+  padding-left: 10px;
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(202, 213, 229, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    0 4px 12px rgba(36, 58, 91, 0.035);
+}
+.row-group-select:hover,
+.row-group-select:focus-within {
+  border-color: rgba(10, 132, 255, 0.32);
+}
+.apple-row-button,
+.apple-icon-button {
+  min-height: 34px;
+  border: 1px solid rgba(202, 213, 229, 0.74) !important;
+  background: rgba(255, 255, 255, 0.52) !important;
+  color: #273246 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.76),
+    0 4px 12px rgba(36, 58, 91, 0.04);
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+.apple-row-button {
+  padding: 0 13px;
+  border-radius: 11px;
+  font-weight: 600;
+}
+.apple-icon-button {
+  width: 34px;
+  padding: 0 !important;
+  border-radius: 50% !important;
+}
+.apple-row-button:hover,
+.apple-row-button:focus-visible,
+.apple-icon-button:hover,
+.apple-icon-button:focus-visible {
+  border-color: rgba(10, 132, 255, 0.34) !important;
+  background: rgba(255, 255, 255, 0.74) !important;
+  color: #007aff !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.86),
+    0 0 0 3px rgba(10, 132, 255, 0.12);
+}
+.apple-row-button .el-icon,
+.apple-icon-button .el-icon {
+  font-size: 14px;
 }
 .entity-select {
   width: 180px;
@@ -861,6 +1044,9 @@ main {
     min-height: 82px;
     padding: 22px;
   }
+  .project-group-list .entity-row {
+    padding: 12px 18px;
+  }
 }
 .audit-row > div:nth-child(2),
 .history-row > div:nth-child(2) {
@@ -980,6 +1166,61 @@ main {
 :root[data-theme='dark'] .history-icon {
   color: #71b4ff;
   background: rgba(40, 103, 174, 0.28);
+}
+:root[data-theme='dark'] .project-control-strip {
+  border-color: rgba(132, 166, 211, 0.18);
+  background: rgba(18, 31, 51, 0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 22px rgba(0, 0, 0, 0.18);
+}
+:root[data-theme='dark'] .apple-select {
+  color: #a8b5c8;
+}
+:root[data-theme='dark'] .apple-select:hover,
+:root[data-theme='dark'] .apple-select:focus-within {
+  background: rgba(255, 255, 255, 0.08);
+  color: #edf4ff;
+}
+:root[data-theme='dark'] .group-form .el-form-item__label {
+  color: #b8c5d8;
+}
+:root[data-theme='dark'] .apple-color-field {
+  border-color: rgba(132, 166, 211, 0.18);
+  background: rgba(18, 31, 51, 0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 22px rgba(0, 0, 0, 0.18);
+}
+:root[data-theme='dark'] .apple-color-field:focus-within {
+  background: rgba(255, 255, 255, 0.08);
+}
+:root[data-theme='dark'] .apple-color-field .el-color-picker__trigger {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(190, 211, 237, 0.16);
+}
+:root[data-theme='dark'] .apple-color-value {
+  color: #a8b5c8;
+}
+:root[data-theme='dark'] .row-group-select,
+:root[data-theme='dark'] .apple-row-button,
+:root[data-theme='dark'] .apple-icon-button {
+  border-color: rgba(132, 166, 211, 0.22) !important;
+  background: rgba(18, 31, 51, 0.48) !important;
+  color: #d6e1f1 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 6px 16px rgba(0, 0, 0, 0.14);
+}
+:root[data-theme='dark'] .row-group-select:hover,
+:root[data-theme='dark'] .row-group-select:focus-within,
+:root[data-theme='dark'] .apple-row-button:hover,
+:root[data-theme='dark'] .apple-row-button:focus-visible,
+:root[data-theme='dark'] .apple-icon-button:hover,
+:root[data-theme='dark'] .apple-icon-button:focus-visible {
+  border-color: rgba(10, 132, 255, 0.38) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #8fc3ff !important;
 }
 :root[data-theme='dark'] .add-row {
   color: #afbdd0;
