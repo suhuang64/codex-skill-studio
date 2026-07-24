@@ -548,7 +548,26 @@ input {
   background: rgba(149, 42, 37, 0.34);
 }
 .source-panel {
-  height: max-content;
+  height: 618px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.source-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.source-list::-webkit-scrollbar {
+  width: 8px;
+}
+.source-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(102, 117, 139, 0.28);
+}
+:root[data-theme='dark'] .source-list::-webkit-scrollbar-thumb {
+  background: rgba(168, 181, 200, 0.28);
 }
 .source-row {
   justify-content: space-between;

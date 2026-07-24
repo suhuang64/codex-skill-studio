@@ -1614,6 +1614,10 @@ else if (__VLS_ctx.tab === 'skills') {
     __VLS_asFunctionalElement1(__VLS_intrinsics.h2, __VLS_intrinsics.h2)({});
     __VLS_asFunctionalElement1(__VLS_intrinsics.p, __VLS_intrinsics.p)({});
     (__VLS_ctx.data.sources.length);
+    __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
+        ...{ class: "source-list" },
+    });
+    /** @type {__VLS_StyleScopedClasses['source-list']} */ ;
     for (const [s] of __VLS_vFor((__VLS_ctx.data.sources))) {
         __VLS_asFunctionalElement1(__VLS_intrinsics.div, __VLS_intrinsics.div)({
             key: (s.id),

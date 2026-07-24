@@ -626,20 +626,22 @@
                 <p>{{ data.sources.length }} 个已注册来源</p>
               </div>
             </div>
-            <div
-              v-for="s in data.sources"
-              :key="s.id"
-              class="source-row"
-              :class="{ active: sourceFilter === s.id }"
-            >
-              <div>
-                <b>{{ s.name }}</b
-                ><small
-                  >{{ s.mode === 'pack' ? '技能包' : '单个技能' }} ·
-                  {{ data.skills.filter((k) => k.sourceId === s.id).length }} 项</small
-                >
+            <div class="source-list">
+              <div
+                v-for="s in data.sources"
+                :key="s.id"
+                class="source-row"
+                :class="{ active: sourceFilter === s.id }"
+              >
+                <div>
+                  <b>{{ s.name }}</b
+                  ><small
+                    >{{ s.mode === 'pack' ? '技能包' : '单个技能' }} ·
+                    {{ data.skills.filter((k) => k.sourceId === s.id).length }} 项</small
+                  >
+                </div>
+                <el-button text type="danger" @click="confirmDelete('sources', s)">移除</el-button>
               </div>
-              <el-button text type="danger" @click="confirmDelete('sources', s)">移除</el-button>
             </div>
             <el-button class="full" plain :icon="Plus" @click="sourceDialog = true"
               >添加来源</el-button
