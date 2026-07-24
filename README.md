@@ -7,6 +7,7 @@
 要求 Node.js 24 或更高版本。依赖已局部安装在项目目录内。
 
 ```bash
+npm run build
 npm start
 ```
 

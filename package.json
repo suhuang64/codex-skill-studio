@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "concurrently -k -n server,web -c blue,magenta \"tsx watch server/index.ts --dev\" \"vite\"",
     "build": "vue-tsc -b && vite build && tsc -p server/tsconfig.json",
-    "start": "npm run build && node dist/server/index.js",
+    "start": "node dist/server/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "vue-tsc -b && tsc -p server/tsconfig.json --noEmit",
