@@ -486,9 +486,6 @@
                   <h3>{{ p.name }}</h3>
                   <code>{{ p.path }}</code>
                 </div>
-                <div class="entity-target">
-                  <span>链接目标</span><code>{{ p.skillsDir }}</code>
-                </div>
               </div>
               <el-select
                 class="entity-select"

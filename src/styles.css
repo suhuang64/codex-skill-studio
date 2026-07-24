@@ -448,7 +448,6 @@ main {
 }
 .entity-title-line code,
 .entity-title-line span,
-.entity-target code,
 .entity-meta {
   color: #748196;
   font-size: 12px;
@@ -460,22 +459,6 @@ main {
 .entity-title-line span {
   flex: 1;
   min-width: 0;
-}
-.entity-target {
-  width: min(100%, 620px);
-  min-width: 0;
-  background: var(--surface-muted);
-  border-radius: 12px;
-  padding: 8px 10px;
-  margin-top: 10px;
-}
-.entity-target span,
-.entity-target code {
-  display: block;
-}
-.entity-target span {
-  color: #8b96a6;
-  font-size: 11px;
 }
 .entity-select {
   width: 180px;
@@ -830,7 +813,6 @@ main {
 :root[data-theme='dark'] .health p,
 :root[data-theme='dark'] .entity-title-line code,
 :root[data-theme='dark'] .entity-title-line span,
-:root[data-theme='dark'] .entity-target code,
 :root[data-theme='dark'] .entity-meta,
 :root[data-theme='dark'] .audit-row p,
 :root[data-theme='dark'] .history-row p,
