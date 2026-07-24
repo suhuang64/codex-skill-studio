@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { Store } from './db.js'
 import { scanSource } from './scanner.js'
-import { applyPlan, makePlan, status, undo } from './linker.js'
+import { applyPlan, audit, makePlan, status, undo } from './linker.js'
 
 const roots:string[]=[]
 async function fixture(){const root=await mkdtemp(join(tmpdir(),'skill-manager-'));roots.push(root);const store=new Store(join(root,'data','test.db'));return {root,store}}
@@ -17,4 +17,8 @@ describe('技能发现',()=>{
 describe('软链接安全事务',()=>{
   it('创建链接后可以完整撤销',async()=>{const {root,store}=await fixture();const projectPath=join(root,'project');const skillPath=join(root,'skill');await mkdir(projectPath,{recursive:true});await mkdir(skillPath);await writeFile(join(skillPath,'SKILL.md'),'---\nname: demo\ndescription: demo\n---');const project=store.addProject({name:'P',path:projectPath,skillsDir:join(projectPath,'.codex','skills')}) as any;const source=store.addSource({name:'S',path:skillPath,mode:'single'}) as any;await scanSource(store,source);const skill=store.skills()[0];const plan=await makePlan(store,[project.id],[skill.id],'link');const result=await applyPlan(store,plan);expect((await lstat(plan.items[0].target)).isSymbolicLink()).toBe(true);expect(await readlink(plan.items[0].target)).toBe(skill.path);await undo(store,result.operationId);await expect(lstat(plan.items[0].target)).rejects.toThrow()})
   it('真实目录冲突永远不会进入替换计划',async()=>{const {root,store}=await fixture();const projectPath=join(root,'project');const skillPath=join(root,'skill');await mkdir(join(projectPath,'.codex','skills','skill'),{recursive:true});await mkdir(skillPath);await writeFile(join(skillPath,'SKILL.md'),'# skill');const project=store.addProject({name:'P',path:projectPath,skillsDir:join(projectPath,'.codex','skills')}) as any;const source=store.addSource({name:'S',path:skillPath,mode:'single'}) as any;await scanSource(store,source);const skill=store.skills()[0];expect((await status(project,skill)).status).toBe('conflict');expect((await makePlan(store,[project.id],[skill.id],'replace')).items).toHaveLength(0)})
+})
+
+describe('健康检查',()=>{
+  it('忽略技能目录中的 macOS .DS_Store 文件',async()=>{const {root,store}=await fixture();const projectPath=join(root,'project');const skillsDir=join(projectPath,'.codex','skills');await mkdir(skillsDir,{recursive:true});await writeFile(join(skillsDir,'.DS_Store'),'metadata');store.addProject({name:'P',path:projectPath,skillsDir});expect(await audit(store)).toEqual([])})
 })
