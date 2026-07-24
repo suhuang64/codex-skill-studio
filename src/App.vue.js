@@ -653,8 +653,12 @@ else if (__VLS_ctx.tab === 'projects') {
         /** @ts-ignore @type { | typeof __VLS_components.elDropdown | typeof __VLS_components.ElDropdown | typeof __VLS_components['el-dropdown'] | typeof __VLS_components.elDropdown | typeof __VLS_components.ElDropdown | typeof __VLS_components['el-dropdown']} */
         elDropdown;
         // @ts-ignore
-        const __VLS_92 = __VLS_asFunctionalComponent1(__VLS_91, new __VLS_91({}));
-        const __VLS_93 = __VLS_92({}, ...__VLS_functionalComponentArgsRest(__VLS_92));
+        const __VLS_92 = __VLS_asFunctionalComponent1(__VLS_91, new __VLS_91({
+            trigger: "click",
+        }));
+        const __VLS_93 = __VLS_92({
+            trigger: "click",
+        }, ...__VLS_functionalComponentArgsRest(__VLS_92));
         const { default: __VLS_96 } = __VLS_94.slots;
         let __VLS_97;
         /** @ts-ignore @type { | typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components['el-button'] | typeof __VLS_components.elButton | typeof __VLS_components.ElButton | typeof __VLS_components['el-button']} */
