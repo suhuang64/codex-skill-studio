@@ -81,6 +81,7 @@
     tab = ref('overview'),
     query = ref(''),
     statusFilter = ref('all'),
+    sourceFilter = ref('all'),
     selectedProject = ref(''),
     statuses = ref<AnyRow[]>([]),
     selectedSkills = ref<AnyRow[]>([])
@@ -130,13 +131,34 @@
     statuses.value = await api(`/projects/${selectedProject.value}/status`)
   }
   watch(selectedProject, loadStatus)
+  const sourceById = computed(() => new Map(data.sources.map((source) => [source.id, source])))
+  const sourceOptions = computed(() => [
+    { label: '全部技能源', value: 'all' },
+    ...data.sources.map((source) => ({
+      label:
+        source.name +
+        '（' +
+        data.skills.filter((skill) => skill.sourceId === source.id).length +
+        '）',
+      value: source.id,
+    })),
+  ])
+  function sourceName(row: AnyRow) {
+    return sourceById.value.get(row.sourceId)?.name || '未知来源'
+  }
+  function sourceMode(row: AnyRow) {
+    return sourceById.value.get(row.sourceId)?.mode === 'single' ? '单个技能' : '技能包'
+  }
   const filteredSkills = computed(() => {
     const q = query.value.toLowerCase()
     return statuses.value.filter(
       (s) =>
         (statusFilter.value === 'all' || s.status === statusFilter.value) &&
+        (sourceFilter.value === 'all' || s.sourceId === sourceFilter.value) &&
         (!q ||
-          `${s.name} ${s.description} ${s.path} ${s.tags.join(' ')}`.toLowerCase().includes(q)),
+          `${s.name} ${s.description} ${sourceName(s)} ${s.path} ${s.tags.join(' ')}`
+            .toLowerCase()
+            .includes(q)),
     )
   })
   const linkedCount = computed(() => statuses.value.filter((s) => s.status === 'linked').length)
@@ -506,18 +528,16 @@
           </div>
         </div>
         <div class="toolbar glass">
-          <el-select v-model="selectedProject" placeholder="选择项目" style="width: 240px"
-            ><el-option
-              v-for="p in data.projects"
-              :key="p.id"
-              :label="p.name"
-              :value="p.id" /></el-select
-          ><el-input
+          <el-select v-model="selectedProject" placeholder="选择项目" style="width: 240px">
+            <el-option v-for="p in data.projects" :key="p.id" :label="p.name" :value="p.id" />
+          </el-select>
+          <el-input
             v-model="query"
             :prefix-icon="Search"
             placeholder="搜索名称、描述、标签或路径"
             clearable
-          /><el-segmented
+          />
+          <el-segmented
             v-model="statusFilter"
             :options="[
               { label: '全部', value: 'all' },
@@ -526,6 +546,20 @@
               { label: '异常', value: 'broken' },
             ]"
           />
+          <el-select
+            v-model="sourceFilter"
+            placeholder="筛选技能源"
+            clearable
+            style="width: 230px"
+            @clear="sourceFilter = 'all'"
+          >
+            <el-option
+              v-for="option in sourceOptions"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            />
+          </el-select>
         </div>
         <div class="library-layout">
           <section class="table-panel glass">
@@ -557,6 +591,13 @@
                     </div>
                   </div></template
                 ></el-table-column
+              ><el-table-column label="技能源" width="190"
+                ><template #default="{ row }"
+                  ><div class="source-text">
+                    <b>{{ sourceName(row) }}</b
+                    ><small>{{ sourceMode(row) }}</small>
+                  </div></template
+                ></el-table-column
               ><el-table-column prop="alias" label="链接名" width="150" /><el-table-column
                 label="状态"
                 width="120"
@@ -585,7 +626,12 @@
                 <p>{{ data.sources.length }} 个已注册来源</p>
               </div>
             </div>
-            <div v-for="s in data.sources" :key="s.id" class="source-row">
+            <div
+              v-for="s in data.sources"
+              :key="s.id"
+              class="source-row"
+              :class="{ active: sourceFilter === s.id }"
+            >
               <div>
                 <b>{{ s.name }}</b
                 ><small

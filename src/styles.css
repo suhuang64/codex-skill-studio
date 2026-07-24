@@ -436,6 +436,9 @@ input {
 .toolbar .el-input {
   flex: 1;
 }
+.toolbar .el-select {
+  flex: none;
+}
 .library-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 290px;
@@ -480,6 +483,30 @@ input {
 }
 .star .on {
   color: #ffb000;
+}
+.source-text {
+  width: 100%;
+  padding: 2px 0;
+  text-align: left;
+  color: #243147;
+}
+.source-text b,
+.source-text small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.source-text small {
+  color: #738196;
+  font-size: 11px;
+  margin-top: 3px;
+}
+:root[data-theme='dark'] .source-text {
+  color: #e4edfa;
+}
+:root[data-theme='dark'] .source-text small {
+  color: #a8b5c8;
 }
 .status {
   padding: 5px 9px;
@@ -526,6 +553,16 @@ input {
 .source-row {
   justify-content: space-between;
   margin: 10px 0;
+  border: 1px solid transparent;
+  transition: 0.2s;
+}
+.source-row.active {
+  border-color: rgba(8, 124, 255, 0.35);
+  background: rgba(8, 124, 255, 0.1);
+}
+:root[data-theme='dark'] .source-row.active {
+  border-color: rgba(90, 167, 255, 0.38);
+  background: rgba(90, 167, 255, 0.14);
 }
 .source-row small {
   margin-top: 4px;
