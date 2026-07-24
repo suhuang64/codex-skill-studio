@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
+import { lstat, mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createApp } from './app.js'
@@ -113,5 +113,113 @@ describe('配置导入导出', () => {
     expect(restoredBundle.skillIds).toEqual([restoredSkill.id])
     expect(restoredBundle.projectIds).toEqual([restoredProject.id])
     await targetApp.close()
+  })
+})
+
+describe('项目组管理', () => {
+  it('支持编辑与安全删除项目组，删除后项目和真实目录保持不变', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'skill-manager-group-'))
+    roots.push(root)
+    const projectPath = join(root, 'project')
+    await mkdir(projectPath)
+    const store = new Store(join(root, 'data', 'test.db'))
+    const project = store.addProject({
+      name: '分组项目',
+      path: projectPath,
+      skillsDir: join(projectPath, '.codex', 'skills'),
+    })
+    const app = createApp(store)
+    const invalidAssignment = await app.inject({
+      method: 'PATCH',
+      url: `/api/projects/${project.id}/group`,
+      headers: { 'content-type': 'application/json' },
+      payload: { groupId: crypto.randomUUID() },
+    })
+    expect(invalidAssignment.statusCode).toBe(400)
+    expect(store.projects()[0].groupId).toBeNull()
+    const created = await app.inject({
+      method: 'POST',
+      url: '/api/groups',
+      headers: { 'content-type': 'application/json' },
+      payload: { name: '研究项目', color: '#34C759' },
+    })
+    const groupId = created.json().id
+    expect(created.statusCode).toBe(200)
+
+    expect(
+      (
+        await app.inject({
+          method: 'PATCH',
+          url: `/api/projects/${project.id}/group`,
+          headers: { 'content-type': 'application/json' },
+          payload: { groupId },
+        })
+      ).statusCode,
+    ).toBe(200)
+    expect(
+      (
+        await app.inject({
+          method: 'PATCH',
+          url: `/api/groups/${groupId}`,
+          headers: { 'content-type': 'application/json' },
+          payload: { name: '临床研究', color: '#007AFF' },
+        })
+      ).statusCode,
+    ).toBe(200)
+    expect(store.groups()[0]).toMatchObject({ name: '临床研究', color: '#007AFF' })
+
+    expect(
+      (
+        await app.inject({
+          method: 'DELETE',
+          url: `/api/groups/${groupId}`,
+        })
+      ).statusCode,
+    ).toBe(200)
+    expect(store.groups()).toHaveLength(0)
+    expect(store.projects()[0]).toMatchObject({ id: project.id, groupId: null })
+    expect((await lstat(projectPath)).isDirectory()).toBe(true)
+    await app.close()
+  })
+
+  it('通过统一预览计划向组内多个项目批量添加技能', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'skill-manager-group-plan-'))
+    roots.push(root)
+    const store = new Store(join(root, 'data', 'test.db'))
+    const projectIds: string[] = []
+    for (const name of ['project-a', 'project-b']) {
+      const path = join(root, name)
+      await mkdir(path)
+      projectIds.push(
+        store.addProject({ name, path, skillsDir: join(path, '.codex', 'skills') }).id,
+      )
+    }
+    const skillPath = join(root, 'skill')
+    await mkdir(skillPath)
+    await writeFile(join(skillPath, 'SKILL.md'), '---\nname: group-skill\ndescription: group\n---')
+    const source = store.addSource({ name: '技能', path: skillPath, mode: 'single' })
+    await scanSource(store, source as any)
+    const app = createApp(store)
+    const planned = await app.inject({
+      method: 'POST',
+      url: '/api/plans',
+      headers: { 'content-type': 'application/json' },
+      payload: { projectIds, skillIds: [store.skills()[0].id], action: 'link' },
+    })
+    const plan = planned.json()
+    expect(planned.statusCode).toBe(200)
+    expect(plan.items).toHaveLength(2)
+    expect(
+      (
+        await app.inject({
+          method: 'POST',
+          url: `/api/plans/${plan.id}/apply`,
+        })
+      ).statusCode,
+    ).toBe(200)
+    const alias = store.skills()[0].alias
+    for (const project of store.projects())
+      expect((await lstat(join(project.skillsDir, alias))).isSymbolicLink()).toBe(true)
+    await app.close()
   })
 })

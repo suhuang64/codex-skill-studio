@@ -16,6 +16,10 @@
     Download,
     Upload,
     Monitor,
+    ArrowDown,
+    EditPen,
+    Delete,
+    MagicStick,
   } from '@element-plus/icons-vue'
   import { api, patch, post, remove } from './api'
 
@@ -82,24 +86,37 @@
     query = ref(''),
     statusFilter = ref('all'),
     sourceFilter = ref('all'),
+    projectGroupFilter = ref('all'),
+    projectGroupSort = ref<'name' | 'count' | 'created'>('name'),
     selectedProject = ref(''),
     statuses = ref<AnyRow[]>([]),
-    selectedSkills = ref<AnyRow[]>([])
+    selectedSkills = ref<AnyRow[]>([]),
+    collapsedGroups = ref<string[]>([])
   const projectDialog = ref(false),
     sourceDialog = ref(false),
     bundleDialog = ref(false),
     planDialog = ref(false),
     groupDialog = ref(false),
+    groupSkillsDialog = ref(false),
     skillDialog = ref(false),
     bundleApplyDialog = ref(false)
   const projectForm = reactive({ name: '', path: '' }),
     sourceForm = reactive({ name: '', path: '', mode: 'pack' }),
     bundleForm = reactive({ name: '', description: '', skillIds: [] as string[] })
   const groupForm = reactive({ name: '', color: '#007AFF' }),
+    groupBatch = reactive({
+      groupId: '',
+      skillIds: [] as string[],
+      action: 'link' as 'link' | 'replace' | 'remove',
+    }),
     skillForm = reactive({ id: '', alias: '', tags: '' }),
     bundleApply = reactive({ bundleId: '', projectId: '' })
   const currentPlan = ref<AnyRow | null>(null),
-    applying = ref(false)
+    applying = ref(false),
+    groupSaving = ref(false),
+    groupBatchLoading = ref(false),
+    editingGroupId = ref(''),
+    planScopeLabel = ref('')
   const nav = [
     ['overview', '总览', House],
     ['projects', '项目', FolderAdd],
@@ -163,6 +180,58 @@
   })
   const linkedCount = computed(() => statuses.value.filter((s) => s.status === 'linked').length)
   const errors = computed(() => data.audit.filter((a) => a.level === 'error').length)
+  const groupById = computed(() => new Map(data.groups.map((group) => [group.id, group])))
+  const projectGroupSections = computed(() => {
+    const sections = data.groups.map((group) => ({
+      ...group,
+      projects: data.projects.filter((project) => project.groupId === group.id),
+      managed: true,
+    }))
+    const ungrouped = {
+      id: 'ungrouped',
+      name: '未分组',
+      color: '#94A3B8',
+      created_at: '',
+      projects: data.projects.filter((project) => !project.groupId),
+      managed: false,
+    }
+    if (ungrouped.projects.length) sections.push(ungrouped)
+    const filtered =
+      projectGroupFilter.value === 'all'
+        ? sections
+        : sections.filter((section) => section.id === projectGroupFilter.value)
+    return [...filtered].sort((a, b) => {
+      if (!a.managed) return 1
+      if (!b.managed) return -1
+      if (projectGroupSort.value === 'count')
+        return b.projects.length - a.projects.length || a.name.localeCompare(b.name, 'zh-CN')
+      if (projectGroupSort.value === 'created')
+        return String(b.created_at).localeCompare(String(a.created_at))
+      return a.name.localeCompare(b.name, 'zh-CN')
+    })
+  })
+  const projectSelectGroups = computed(() => {
+    const sections = data.groups.map((group) => ({
+      ...group,
+      projects: data.projects.filter((project) => project.groupId === group.id),
+    }))
+    const ungrouped = data.projects.filter((project) => !project.groupId)
+    if (ungrouped.length)
+      sections.push({ id: 'ungrouped', name: '未分组', color: '#94A3B8', projects: ungrouped })
+    return sections.filter((section) => section.projects.length)
+  })
+  const activeGroupBatch = computed(() => groupById.value.get(groupBatch.groupId))
+  function groupForProject(project: AnyRow) {
+    return groupById.value.get(project.groupId)
+  }
+  function isGroupCollapsed(id: string) {
+    return collapsedGroups.value.includes(id)
+  }
+  function toggleGroup(id: string) {
+    collapsedGroups.value = isGroupCollapsed(id)
+      ? collapsedGroups.value.filter((groupId) => groupId !== id)
+      : [...collapsedGroups.value, id]
+  }
   async function choose(target: { path: string }, title: string) {
     const r = await post('/dialog/directory', { title })
     if (r.path) target.path = r.path
@@ -231,6 +300,8 @@
         skillIds: selectedSkills.value.map((s) => s.id),
         action,
       })
+      planScopeLabel.value =
+        data.projects.find((project) => project.id === selectedProject.value)?.name || ''
       planDialog.value = true
     } catch (e: any) {
       ElMessage.error(e.message)
@@ -243,6 +314,7 @@
       const r = await post(`/plans/${currentPlan.value.id}/apply`)
       planDialog.value = false
       currentPlan.value = null
+      planScopeLabel.value = ''
       selectedSkills.value = []
       await refresh()
       ElMessage.success(`已安全应用 ${r.completed} 项变更`)
@@ -275,20 +347,85 @@
       ElMessage.error(e.message)
     }
   }
-  async function createGroup() {
+  function openCreateGroup() {
+    editingGroupId.value = ''
+    Object.assign(groupForm, { name: '', color: '#007AFF' })
+    groupDialog.value = true
+  }
+  function openEditGroup(group: AnyRow) {
+    editingGroupId.value = group.id
+    Object.assign(groupForm, { name: group.name, color: group.color })
+    groupDialog.value = true
+  }
+  async function saveGroup() {
+    groupSaving.value = true
     try {
-      await post('/groups', groupForm)
+      if (editingGroupId.value) await patch(`/groups/${editingGroupId.value}`, groupForm)
+      else await post('/groups', groupForm)
       groupDialog.value = false
-      groupForm.name = ''
       await refresh()
-      ElMessage.success('项目组已创建')
+      ElMessage.success(editingGroupId.value ? '项目组已更新' : '项目组已创建')
+    } catch (e: any) {
+      ElMessage.error(e.message)
+    } finally {
+      groupSaving.value = false
+    }
+  }
+  async function confirmDeleteGroup(group: AnyRow) {
+    const count = data.projects.filter((project) => project.groupId === group.id).length
+    try {
+      await ElMessageBox.confirm(
+        `删除“${group.name}”后，${count} 个成员项目将变为未分组。项目目录和技能链接不会被删除。`,
+        '删除项目组',
+        { type: 'warning', confirmButtonText: '删除项目组', cancelButtonText: '保留' },
+      )
+      await remove(`/groups/${group.id}`)
+      if (projectGroupFilter.value === group.id) projectGroupFilter.value = 'all'
+      collapsedGroups.value = collapsedGroups.value.filter((id) => id !== group.id)
+      await refresh()
+      ElMessage.success('项目组已删除，成员项目已移至未分组')
+    } catch (e: any) {
+      if (e === 'cancel' || e === 'close') return
+      ElMessage.error(`删除项目组失败：${e?.message || e}`)
+    }
+  }
+  async function assignGroup(project: AnyRow, groupId: string | null) {
+    try {
+      await patch(`/projects/${project.id}/group`, { groupId })
+      await refresh()
+      ElMessage.success(groupId ? '项目分组已更新' : '项目已移至未分组')
     } catch (e: any) {
       ElMessage.error(e.message)
     }
   }
-  async function assignGroup(project: AnyRow, groupId: string | null) {
-    await patch(`/projects/${project.id}/group`, { groupId })
-    await refresh()
+  function openGroupSkills(group: AnyRow) {
+    const projectCount = data.projects.filter((project) => project.groupId === group.id).length
+    if (!projectCount) return ElMessage.warning('该项目组中还没有项目')
+    Object.assign(groupBatch, { groupId: group.id, skillIds: [], action: 'link' })
+    groupSkillsDialog.value = true
+  }
+  async function stageGroupSkills() {
+    const group = activeGroupBatch.value
+    const projectIds = data.projects
+      .filter((project) => project.groupId === groupBatch.groupId)
+      .map((project) => project.id)
+    if (!group || !projectIds.length || !groupBatch.skillIds.length)
+      return ElMessage.warning('请选择至少一个技能')
+    groupBatchLoading.value = true
+    try {
+      currentPlan.value = await post('/plans', {
+        projectIds,
+        skillIds: groupBatch.skillIds,
+        action: groupBatch.action,
+      })
+      planScopeLabel.value = `${group.name} · ${projectIds.length} 个项目`
+      groupSkillsDialog.value = false
+      planDialog.value = true
+    } catch (e: any) {
+      ElMessage.error(e.message)
+    } finally {
+      groupBatchLoading.value = false
+    }
   }
   function editSkill(row: AnyRow) {
     Object.assign(skillForm, { id: row.id, alias: row.alias, tags: row.tags.join(', ') })
@@ -323,6 +460,8 @@
       action: 'link',
       bundleId: bundle.id,
     })
+    planScopeLabel.value =
+      data.projects.find((project) => project.id === bundleApply.projectId)?.name || ''
     bundleApplyDialog.value = false
     planDialog.value = true
   }
@@ -427,8 +566,14 @@
               <div v-for="p in data.projects.slice(0, 4)" :key="p.id" class="mini-card">
                 <div class="folder-icon"><FolderAdd /></div>
                 <div>
-                  <b>{{ p.name }}</b
-                  ><small>{{ p.path }}</small>
+                  <div class="mini-card-title">
+                    <b>{{ p.name }}</b>
+                    <span v-if="groupForProject(p)" class="group-badge">
+                      <i :style="{ background: groupForProject(p)?.color }"></i>
+                      {{ groupForProject(p)?.name }}
+                    </span>
+                  </div>
+                  <small>{{ p.path }}</small>
                 </div>
               </div>
             </div>
@@ -471,42 +616,129 @@
             <p>注册任意 macOS 项目目录，技能目标固定为项目内的 .codex/skills。</p>
           </div>
           <div>
-            <el-button @click="groupDialog = true">新建项目组</el-button
+            <el-button @click="openCreateGroup">新建项目组</el-button
             ><el-button type="primary" :icon="FolderAdd" @click="projectDialog = true"
               >添加项目</el-button
             >
           </div>
         </div>
-        <div class="content-frame glass">
-          <div class="entity-list scroll-list">
-            <article v-for="p in data.projects" :key="p.id" class="entity-row project-row">
-              <div class="folder-icon"><FolderAdd /></div>
-              <div class="entity-main">
-                <div class="entity-title-line">
-                  <h3>{{ p.name }}</h3>
-                  <code>{{ p.path }}</code>
+        <div class="content-frame project-frame glass">
+          <div class="project-controls">
+            <div>
+              <el-select v-model="projectGroupFilter" aria-label="筛选项目组" style="width: 210px">
+                <el-option label="全部项目组" value="all" />
+                <el-option
+                  v-for="group in data.groups"
+                  :key="group.id"
+                  :label="group.name"
+                  :value="group.id"
+                >
+                  <div class="group-option">
+                    <i :style="{ background: group.color }"></i><span>{{ group.name }}</span>
+                  </div>
+                </el-option>
+                <el-option
+                  v-if="data.projects.some((project) => !project.groupId)"
+                  label="未分组"
+                  value="ungrouped"
+                />
+              </el-select>
+              <el-select v-model="projectGroupSort" aria-label="项目组排序" style="width: 180px">
+                <el-option label="按名称排序" value="name" />
+                <el-option label="按项目数排序" value="count" />
+                <el-option label="按创建时间排序" value="created" />
+              </el-select>
+            </div>
+            <span>{{ data.groups.length }} 个项目组 · {{ data.projects.length }} 个项目</span>
+          </div>
+          <div class="project-groups scroll-list">
+            <section v-for="group in projectGroupSections" :key="group.id" class="project-group">
+              <header class="project-group-head">
+                <button
+                  class="group-toggle"
+                  type="button"
+                  :aria-expanded="!isGroupCollapsed(group.id)"
+                  @click="toggleGroup(group.id)"
+                >
+                  <i class="group-swatch" :style="{ background: group.color }"></i>
+                  <span>
+                    <b>{{ group.name }}</b>
+                    <small>{{ group.projects.length }} 个项目</small>
+                  </span>
+                  <el-icon :class="{ collapsed: isGroupCollapsed(group.id) }"
+                    ><ArrowDown
+                  /></el-icon>
+                </button>
+                <div v-if="group.managed" class="group-actions">
+                  <el-button
+                    :icon="MagicStick"
+                    :disabled="!group.projects.length"
+                    @click="openGroupSkills(group)"
+                    >批量配置技能</el-button
+                  >
+                  <el-tooltip content="编辑项目组">
+                    <el-button
+                      circle
+                      :icon="EditPen"
+                      :aria-label="`编辑项目组 ${group.name}`"
+                      @click="openEditGroup(group)"
+                    />
+                  </el-tooltip>
+                  <el-tooltip content="删除项目组">
+                    <el-button
+                      circle
+                      plain
+                      type="danger"
+                      :icon="Delete"
+                      :aria-label="`删除项目组 ${group.name}`"
+                      @click="confirmDeleteGroup(group)"
+                    />
+                  </el-tooltip>
                 </div>
+              </header>
+              <div v-show="!isGroupCollapsed(group.id)" class="project-group-list">
+                <article v-for="p in group.projects" :key="p.id" class="entity-row project-row">
+                  <div class="folder-icon"><FolderAdd /></div>
+                  <div class="entity-main">
+                    <div class="entity-title-line">
+                      <h3>{{ p.name }}</h3>
+                      <code>{{ p.path }}</code>
+                    </div>
+                  </div>
+                  <el-select
+                    class="entity-select"
+                    :model-value="p.groupId"
+                    clearable
+                    placeholder="未分组"
+                    @change="assignGroup(p, $event || null)"
+                  >
+                    <el-option
+                      v-for="option in data.groups"
+                      :key="option.id"
+                      :label="option.name"
+                      :value="option.id"
+                    >
+                      <div class="group-option">
+                        <i :style="{ background: option.color }"></i><span>{{ option.name }}</span>
+                      </div>
+                    </el-option>
+                  </el-select>
+                  <el-button @click="openProjectSkills(p)">管理技能</el-button>
+                  <el-dropdown trigger="click"
+                    ><el-button text>•••</el-button
+                    ><template #dropdown
+                      ><el-dropdown-menu
+                        ><el-dropdown-item @click="confirmDelete('projects', p)"
+                          >取消注册</el-dropdown-item
+                        ></el-dropdown-menu
+                      ></template
+                    ></el-dropdown
+                  >
+                </article>
+                <div v-if="!group.projects.length" class="empty-group">暂无项目</div>
               </div>
-              <el-select
-                class="entity-select"
-                :model-value="p.groupId"
-                clearable
-                placeholder="未分组"
-                @change="assignGroup(p, $event || null)"
-                ><el-option v-for="g in data.groups" :key="g.id" :label="g.name" :value="g.id"
-              /></el-select>
-              <el-button @click="openProjectSkills(p)">管理技能</el-button>
-              <el-dropdown trigger="click"
-                ><el-button text>•••</el-button
-                ><template #dropdown
-                  ><el-dropdown-menu
-                    ><el-dropdown-item @click="confirmDelete('projects', p)"
-                      >取消注册</el-dropdown-item
-                    ></el-dropdown-menu
-                  ></template
-                ></el-dropdown
-              >
-            </article>
+            </section>
+            <el-empty v-if="!projectGroupSections.length" description="当前筛选没有项目组" />
           </div>
         </div>
       </section>
@@ -527,7 +759,13 @@
         </div>
         <div class="toolbar glass">
           <el-select v-model="selectedProject" placeholder="选择项目" style="width: 240px">
-            <el-option v-for="p in data.projects" :key="p.id" :label="p.name" :value="p.id" />
+            <el-option-group
+              v-for="group in projectSelectGroups"
+              :key="group.id"
+              :label="group.name"
+            >
+              <el-option v-for="p in group.projects" :key="p.id" :label="p.name" :value="p.id" />
+            </el-option-group>
           </el-select>
           <el-input
             v-model="query"
@@ -849,18 +1087,74 @@
       ></template
     ></el-dialog
   >
-  <el-dialog v-model="groupDialog" title="新建项目组" width="480"
+  <el-dialog v-model="groupDialog" :title="editingGroupId ? '编辑项目组' : '新建项目组'" width="480"
     ><el-form label-position="top"
-      ><el-form-item label="项目组名称"><el-input v-model="groupForm.name" /></el-form-item
+      ><el-form-item label="项目组名称"><el-input v-model.trim="groupForm.name" /></el-form-item
       ><el-form-item label="标识颜色"
         ><el-color-picker v-model="groupForm.color" /></el-form-item></el-form
     ><template #footer
       ><el-button @click="groupDialog = false">取消</el-button
-      ><el-button type="primary" :disabled="!groupForm.name" @click="createGroup"
-        >创建</el-button
+      ><el-button
+        type="primary"
+        :loading="groupSaving"
+        :disabled="!groupForm.name"
+        @click="saveGroup"
+        >{{ editingGroupId ? '保存' : '创建' }}</el-button
       ></template
     ></el-dialog
   >
+  <el-dialog
+    v-model="groupSkillsDialog"
+    :title="`批量配置技能 · ${activeGroupBatch?.name || ''}`"
+    width="620"
+  >
+    <el-form label-position="top">
+      <el-form-item label="操作方式">
+        <el-segmented
+          v-model="groupBatch.action"
+          :options="[
+            { label: '加入链接', value: 'link' },
+            { label: '替换异常链接', value: 'replace' },
+            { label: '移除链接', value: 'remove' },
+          ]"
+        />
+      </el-form-item>
+      <el-form-item label="选择技能">
+        <el-select
+          v-model="groupBatch.skillIds"
+          multiple
+          filterable
+          collapse-tags
+          collapse-tags-tooltip
+          placeholder="选择要批量配置的技能"
+          style="width: 100%"
+        >
+          <el-option
+            v-for="skill in data.skills"
+            :key="skill.id"
+            :label="`${skill.name} · ${sourceName(skill)}`"
+            :value="skill.id"
+            :disabled="!skill.available"
+          />
+        </el-select>
+      </el-form-item>
+    </el-form>
+    <el-alert
+      :title="`将为组内 ${data.projects.filter((project) => project.groupId === groupBatch.groupId).length} 个项目生成统一变更计划。`"
+      type="info"
+      :closable="false"
+    />
+    <template #footer>
+      <el-button @click="groupSkillsDialog = false">取消</el-button>
+      <el-button
+        type="primary"
+        :loading="groupBatchLoading"
+        :disabled="!groupBatch.skillIds.length"
+        @click="stageGroupSkills"
+        >预览变更计划</el-button
+      >
+    </template>
+  </el-dialog>
   <el-dialog v-model="skillDialog" title="编辑技能" width="520"
     ><el-form label-position="top"
       ><el-form-item label="项目内链接名"
@@ -907,6 +1201,7 @@
     />
     <div class="plan-summary">
       <b>将应用 {{ currentPlan?.items.length || 0 }} 项变更</b>
+      <span v-if="planScopeLabel">{{ planScopeLabel }}</span>
       <p>管理器只会创建或移除软链接，真实目录和普通文件绝不会被覆盖。</p>
     </div>
     <div class="plan-items">

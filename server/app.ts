@@ -128,7 +128,13 @@ export function createApp(store: Store, options: { staticRoot?: string } = {}) {
   })
   app.post('/api/groups', async (req) => {
     const b = z
-      .object({ name: z.string().trim().min(1), color: z.string().default('#007AFF') })
+      .object({
+        name: z.string().trim().min(1),
+        color: z
+          .string()
+          .regex(/^#[0-9a-f]{6}$/i)
+          .default('#007AFF'),
+      })
       .parse(req.body)
     const id = crypto.randomUUID()
     store.run(
@@ -140,8 +146,38 @@ export function createApp(store: Store, options: { staticRoot?: string } = {}) {
     )
     return { id, ...b }
   })
+  app.patch('/api/groups/:id', async (req) => {
+    const id = (req.params as any).id
+    const group = store.get<any>('SELECT id FROM project_groups WHERE id=?', id)
+    if (!group) throw new Error('项目组不存在')
+    const body = z
+      .object({
+        name: z.string().trim().min(1),
+        color: z.string().regex(/^#[0-9a-f]{6}$/i),
+      })
+      .parse(req.body)
+    store.run('UPDATE project_groups SET name=?,color=? WHERE id=?', body.name, body.color, id)
+    return { id, ...body }
+  })
+  app.delete('/api/groups/:id', async (req) => {
+    const id = (req.params as any).id
+    const group = store.get<any>('SELECT id FROM project_groups WHERE id=?', id)
+    if (!group) throw new Error('项目组不存在')
+    store.db.exec('BEGIN')
+    try {
+      store.run('UPDATE projects SET group_id=NULL WHERE group_id=?', id)
+      store.run('DELETE FROM project_groups WHERE id=?', id)
+      store.db.exec('COMMIT')
+    } catch (error) {
+      store.db.exec('ROLLBACK')
+      throw error
+    }
+    return { ok: true }
+  })
   app.patch('/api/projects/:id/group', async (req) => {
     const groupId = z.object({ groupId: z.string().nullable() }).parse(req.body).groupId
+    if (groupId && !store.get('SELECT id FROM project_groups WHERE id=?', groupId))
+      throw new Error('项目组不存在')
     store.run('UPDATE projects SET group_id=? WHERE id=?', groupId, (req.params as any).id)
     return { ok: true }
   })
