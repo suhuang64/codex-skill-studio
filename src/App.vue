@@ -510,9 +510,6 @@
                 ></el-dropdown
               >
             </article>
-            <button class="entity-row add-row" @click="projectDialog = true">
-              <Plus /><span>添加新项目</span>
-            </button>
           </div>
         </div>
       </section>
