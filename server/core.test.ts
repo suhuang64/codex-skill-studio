@@ -1,0 +1,20 @@
+import { afterEach, describe, expect, it } from 'vitest'
+import { lstat, mkdtemp, mkdir, readlink, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { Store } from './db.js'
+import { scanSource } from './scanner.js'
+import { applyPlan, makePlan, status, undo } from './linker.js'
+
+const roots:string[]=[]
+async function fixture(){const root=await mkdtemp(join(tmpdir(),'skill-manager-'));roots.push(root);const store=new Store(join(root,'data','test.db'));return {root,store}}
+afterEach(async()=>{for(const root of roots.splice(0))await rm(root,{recursive:true,force:true})})
+
+describe('技能发现',()=>{
+  it('递归识别任意嵌套目录中的 SKILL.md 并解析元数据',async()=>{const {root,store}=await fixture();const pack=join(root,'vendor');const nested=join(pack,'.claude','skills','visual');await mkdir(nested,{recursive:true});await writeFile(join(nested,'SKILL.md'),'---\nname: visual-pro\ndescription: 高级视觉技能\n---\n# fallback');const source=store.addSource({name:'vendor',path:pack,mode:'pack'}) as any;expect(await scanSource(store,source)).toBe(1);expect(store.skills()[0]).toMatchObject({name:'visual-pro',description:'高级视觉技能',relativePath:'.claude/skills/visual'})})
+})
+
+describe('软链接安全事务',()=>{
+  it('创建链接后可以完整撤销',async()=>{const {root,store}=await fixture();const projectPath=join(root,'project');const skillPath=join(root,'skill');await mkdir(projectPath,{recursive:true});await mkdir(skillPath);await writeFile(join(skillPath,'SKILL.md'),'---\nname: demo\ndescription: demo\n---');const project=store.addProject({name:'P',path:projectPath,skillsDir:join(projectPath,'.codex','skills')}) as any;const source=store.addSource({name:'S',path:skillPath,mode:'single'}) as any;await scanSource(store,source);const skill=store.skills()[0];const plan=await makePlan(store,[project.id],[skill.id],'link');const result=await applyPlan(store,plan);expect((await lstat(plan.items[0].target)).isSymbolicLink()).toBe(true);expect(await readlink(plan.items[0].target)).toBe(skill.path);await undo(store,result.operationId);await expect(lstat(plan.items[0].target)).rejects.toThrow()})
+  it('真实目录冲突永远不会进入替换计划',async()=>{const {root,store}=await fixture();const projectPath=join(root,'project');const skillPath=join(root,'skill');await mkdir(join(projectPath,'.codex','skills','skill'),{recursive:true});await mkdir(skillPath);await writeFile(join(skillPath,'SKILL.md'),'# skill');const project=store.addProject({name:'P',path:projectPath,skillsDir:join(projectPath,'.codex','skills')}) as any;const source=store.addSource({name:'S',path:skillPath,mode:'single'}) as any;await scanSource(store,source);const skill=store.skills()[0];expect((await status(project,skill)).status).toBe('conflict');expect((await makePlan(store,[project.id],[skill.id],'replace')).items).toHaveLength(0)})
+})

@@ -1,0 +1,40 @@
+{
+  "name": "codex-skill-manager",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "面向 macOS 的本地 Codex 技能与项目软链接管理器",
+  "scripts": {
+    "dev": "concurrently -k -n server,web -c blue,magenta \"tsx watch server/index.ts --dev\" \"vite\"",
+    "build": "vue-tsc -b && vite build && tsc -p server/tsconfig.json",
+    "start": "npm run build && node dist/server/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "vue-tsc -b && tsc -p server/tsconfig.json --noEmit"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "@fastify/static": "^10.1.2",
+    "element-plus": "^2.14.3",
+    "fastify": "^5.10.0",
+    "pinia": "^4.0.2",
+    "vue": "^3.5.40",
+    "vue-router": "^5.2.0",
+    "yaml": "^2.9.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vitest/coverage-v8": "^4.1.10",
+    "concurrently": "^10.0.3",
+    "tsx": "^4.23.1",
+    "typescript": "^5.9.3",
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10",
+    "vue-tsc": "^3.3.8"
+  }
+}

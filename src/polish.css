@@ -1,0 +1,16 @@
+.tabs > button > .el-icon {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 15px;
+}
+
+.tabs .nav-badge {
+  padding: 1px 5px;
+  border-radius: 9px;
+  background: #ff453a;
+  color: white;
+  font-size: 10px;
+  font-style: normal;
+}
