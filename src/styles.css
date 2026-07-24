@@ -678,6 +678,8 @@ main {
   border-radius: 11px 0 0 11px;
 }
 .apple-dialog-input .el-input-group__append {
+  width: 86px;
+  flex: 0 0 86px;
   overflow: hidden;
   border-left-color: rgba(202, 213, 229, 0.54);
   border-radius: 0 11px 11px 0;
@@ -691,13 +693,22 @@ main {
   color: #98a5b8;
 }
 .apple-dialog-input .el-input-group__append .el-button {
+  width: 100%;
   min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   padding: 0 13px;
   border: 0;
   border-radius: 0;
   background: rgba(255, 255, 255, 0.18);
   color: #4f5f74;
   font-weight: 600;
+  white-space: nowrap;
+}
+.apple-dialog-input .el-input-group__append .el-button .el-icon {
+  flex: none;
 }
 .apple-dialog-input .el-input-group__append .el-button:hover,
 .apple-dialog-input .el-input-group__append .el-button:focus-visible {
@@ -709,6 +720,85 @@ main {
   border-color: rgba(10, 132, 255, 0.34);
   background: rgba(255, 255, 255, 0.76);
   box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.14);
+}
+.apple-workflow-dialog .el-dialog__body {
+  padding-top: 8px;
+}
+.apple-workflow-dialog .el-dialog {
+  max-width: calc(100vw - 72px);
+}
+.group-skills-form {
+  display: grid;
+  gap: 16px;
+}
+.group-skills-form .el-form-item {
+  margin-bottom: 0;
+}
+.apple-segmented {
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.46);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.84),
+    0 8px 22px rgba(36, 58, 91, 0.05);
+}
+.apple-segmented .el-segmented__item {
+  border-radius: 10px;
+  color: #5f6f86;
+  font-weight: 600;
+}
+.apple-segmented .el-segmented__item-selected {
+  color: white;
+  background: linear-gradient(180deg, #087cff 0%, #0066d6 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 5px 14px rgba(0, 102, 214, 0.28);
+}
+.apple-segmented .el-segmented__item-selected .el-segmented__item-label {
+  color: #ffffff !important;
+  font-weight: 700;
+  text-shadow: 0 1px 1px rgba(0, 47, 108, 0.28);
+}
+.batch-skill-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 10px;
+}
+.batch-source-select {
+  width: 210px;
+  height: 34px;
+  padding-left: 10px;
+}
+.batch-selection-count {
+  color: #748196;
+  font-size: 12px;
+  font-weight: 600;
+}
+.batch-skill-table {
+  height: 360px;
+  overflow: hidden;
+  border-radius: 16px;
+  padding: 8px;
+  margin-top: 12px;
+}
+.batch-skill-table .el-table {
+  height: 100%;
+}
+.batch-skill-table .skill-name > .el-icon {
+  color: #a7b3c5;
+  font-size: 16px;
+}
+.batch-skill-table .skill-name > .el-icon.on {
+  color: #ff9f0a;
+}
+.apple-inline-alert {
+  margin-top: 18px;
+  border: 1px solid rgba(202, 213, 229, 0.56);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.46);
 }
 .project-group-list {
   display: flex;
@@ -1292,6 +1382,32 @@ main {
 :root[data-theme='dark'] .apple-dialog-input:focus-within .el-input-group__append {
   border-color: rgba(10, 132, 255, 0.38);
   background: rgba(255, 255, 255, 0.08);
+}
+:root[data-theme='dark'] .apple-segmented,
+:root[data-theme='dark'] .apple-inline-alert {
+  border-color: rgba(132, 166, 211, 0.18);
+  background: rgba(18, 31, 51, 0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 22px rgba(0, 0, 0, 0.18);
+}
+:root[data-theme='dark'] .apple-segmented .el-segmented__item {
+  color: #a8b5c8;
+}
+:root[data-theme='dark'] .apple-segmented .el-segmented__item-selected {
+  color: white;
+  background: linear-gradient(180deg, #0a84ff 0%, #0066d6 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 5px 16px rgba(0, 102, 214, 0.34);
+}
+:root[data-theme='dark'] .apple-segmented .el-segmented__item-selected .el-segmented__item-label {
+  color: #ffffff !important;
+  font-weight: 700;
+  text-shadow: 0 1px 1px rgba(0, 35, 83, 0.34);
+}
+:root[data-theme='dark'] .batch-selection-count {
+  color: #a8b5c8;
 }
 :root[data-theme='dark'] .row-group-select,
 :root[data-theme='dark'] .apple-row-button,

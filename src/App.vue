@@ -104,6 +104,7 @@
     sourceFilter = ref('all'),
     projectGroupFilter = ref('all'),
     projectGroupSort = ref<'name' | 'count' | 'created'>('name'),
+    groupBatchSourceFilter = ref('all'),
     selectedProject = ref(''),
     statuses = ref<AnyRow[]>([]),
     selectedSkills = ref<AnyRow[]>([]),
@@ -194,6 +195,12 @@
             .includes(q)),
     )
   })
+  const filteredGroupBatchSkills = computed(() =>
+    data.skills.filter(
+      (skill) =>
+        groupBatchSourceFilter.value === 'all' || skill.sourceId === groupBatchSourceFilter.value,
+    ),
+  )
   const linkedCount = computed(() => statuses.value.filter((s) => s.status === 'linked').length)
   const errors = computed(() => data.audit.filter((a) => a.level === 'error').length)
   const groupById = computed(() => new Map(data.groups.map((group) => [group.id, group])))
@@ -418,7 +425,14 @@
     const projectCount = data.projects.filter((project) => project.groupId === group.id).length
     if (!projectCount) return ElMessage.warning('该项目组中还没有项目')
     Object.assign(groupBatch, { groupId: group.id, skillIds: [], action: 'link' })
+    groupBatchSourceFilter.value = 'all'
     groupSkillsDialog.value = true
+  }
+  function handleGroupBatchSkillSelection(rows: AnyRow[]) {
+    groupBatch.skillIds = rows.map((row) => row.id)
+  }
+  function isGroupBatchSkillSelectable(row: AnyRow) {
+    return !!row.available
   }
   async function stageGroupSkills() {
     const group = activeGroupBatch.value
@@ -1161,12 +1175,14 @@
   <el-dialog
     v-model="groupSkillsDialog"
     :title="`批量配置技能 · ${activeGroupBatch?.name || ''}`"
-    width="620"
+    width="960"
+    class="apple-workflow-dialog"
   >
-    <el-form label-position="top">
+    <el-form class="apple-dialog-form group-skills-form" label-position="top">
       <el-form-item label="操作方式">
         <el-segmented
           v-model="groupBatch.action"
+          class="apple-segmented"
           :options="[
             { label: '加入链接', value: 'link' },
             { label: '替换异常链接', value: 'replace' },
@@ -1175,26 +1191,70 @@
         />
       </el-form-item>
       <el-form-item label="选择技能">
-        <el-select
-          v-model="groupBatch.skillIds"
-          multiple
-          filterable
-          collapse-tags
-          collapse-tags-tooltip
-          placeholder="选择要批量配置的技能"
-          style="width: 100%"
-        >
-          <el-option
-            v-for="skill in data.skills"
-            :key="skill.id"
-            :label="`${skill.name} · ${sourceName(skill)}`"
-            :value="skill.id"
-            :disabled="!skill.available"
-          />
-        </el-select>
+        <div class="batch-skill-picker">
+          <div class="apple-select batch-source-select">
+            <el-select
+              v-model="groupBatchSourceFilter"
+              aria-label="筛选技能源"
+              popper-class="apple-select-popper"
+            >
+              <el-option
+                v-for="option in sourceOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+              />
+            </el-select>
+          </div>
+          <span class="batch-selection-count">已选择 {{ groupBatch.skillIds.length }} 项</span>
+        </div>
       </el-form-item>
     </el-form>
+    <div class="batch-skill-table glass">
+      <el-table
+        :data="filteredGroupBatchSkills"
+        row-key="id"
+        height="360"
+        empty-text="当前筛选没有技能"
+        @selection-change="handleGroupBatchSkillSelection"
+      >
+        <el-table-column type="selection" width="48" :selectable="isGroupBatchSkillSelectable" />
+        <el-table-column label="技能" min-width="280">
+          <template #default="{ row }">
+            <div class="skill-name">
+              <el-icon :class="{ on: row.favorite }"><Star /></el-icon>
+              <div>
+                <b>{{ row.name }}</b>
+                <small>{{ row.description || row.path }}</small>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="技能源" width="190">
+          <template #default="{ row }">
+            <div class="source-text">
+              <b>{{ sourceName(row) }}</b>
+              <small>{{ sourceMode(row) }}</small>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="alias" label="链接名" width="150" />
+        <el-table-column label="状态" width="110">
+          <template #default="{ row }">
+            <span class="status" :class="row.available ? 'linked' : 'broken'">{{
+              row.available ? '可用' : '不可用'
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="标签" width="150">
+          <template #default="{ row }">
+            <el-tag v-for="t in row.tags.slice(0, 2)" :key="t" round>{{ t }}</el-tag>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
     <el-alert
+      class="apple-inline-alert"
       :title="`将为组内 ${data.projects.filter((project) => project.groupId === groupBatch.groupId).length} 个项目生成统一变更计划。`"
       type="info"
       :closable="false"
