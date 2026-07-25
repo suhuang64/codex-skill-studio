@@ -777,7 +777,7 @@ main {
 }
 .bundle-meta-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   gap: 16px;
 }

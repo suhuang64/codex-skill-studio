@@ -1197,7 +1197,13 @@
       ></template
     ></el-dialog
   >
-  <el-dialog v-model="bundleDialog" title="新建技能组合" width="960" class="apple-workflow-dialog">
+  <el-dialog
+    v-model="bundleDialog"
+    title="新建技能组合"
+    width="960"
+    class="apple-workflow-dialog"
+    align-center
+  >
     <el-form class="apple-dialog-form bundle-form" label-position="top">
       <div class="bundle-meta-grid">
         <el-form-item label="组合名称">
