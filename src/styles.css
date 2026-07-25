@@ -1637,8 +1637,19 @@ main {
     inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
 }
 .el-message-box {
-  width: min(420px, calc(100vw - 48px));
-  padding: 6px 4px 4px;
+  width: min(460px, calc(100vw - 48px));
+  padding: 24px 26px 22px;
+}
+.el-message-box__header {
+  padding: 0 34px 0 0;
+}
+.el-message-box__headerbtn {
+  top: 20px;
+  right: 20px;
+}
+.el-message-box__content {
+  align-items: flex-start;
+  padding: 14px 0 0;
 }
 .el-message-box__title,
 .el-message-box__message,
@@ -1646,10 +1657,18 @@ main {
   color: #273246 !important;
 }
 .el-message-box__title {
+  font-size: 17px;
   font-weight: 750;
 }
+.el-message-box__message {
+  line-height: 1.65;
+}
 .el-message-box__btns {
-  padding-top: 16px;
+  gap: 10px;
+  padding: 22px 0 0;
+}
+.el-message-box__btns .el-button + .el-button {
+  margin-left: 0;
 }
 .el-button--danger.is-plain,
 .el-button--danger.is-text,
