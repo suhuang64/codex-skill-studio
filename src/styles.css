@@ -1261,19 +1261,23 @@ main {
   cursor: pointer;
 }
 .skill-detail-dialog {
+  height: min(800px, calc(100vh - 48px));
   max-width: calc(100vw - 48px);
-  max-height: calc(100vh - 48px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 .skill-detail-dialog .el-dialog__body {
+  flex: 1;
   min-height: 0;
   padding-top: 10px;
-  overflow-y: auto;
+  overflow: hidden;
 }
 .skill-detail-layout {
-  display: grid;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 .skill-detail-hero {
@@ -1321,9 +1325,13 @@ main {
   white-space: nowrap;
 }
 .skill-detail-heading p {
+  display: -webkit-box;
   margin: 0;
+  overflow: hidden;
   color: #66758b;
   line-height: 1.6;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
 }
 .skill-detail-favorite {
   align-self: start;
@@ -1336,7 +1344,7 @@ main {
 }
 .skill-detail-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin: 0;
 }
@@ -1370,17 +1378,18 @@ main {
   font-family: 'SFMono-Regular', Consolas, monospace;
   font-size: 12px;
 }
-.skill-detail-path {
-  grid-column: 1 / -1;
-}
 .skill-detail-document {
-  min-height: 170px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   border: 1px solid rgba(202, 213, 229, 0.54);
   border-radius: 18px;
   background: var(--surface-soft);
   overflow: hidden;
 }
 .skill-detail-document header {
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1395,17 +1404,165 @@ main {
   margin-top: 2px;
   color: #7a879a;
 }
-.skill-detail-document pre {
-  max-height: min(300px, 34vh);
-  margin: 0;
-  padding: 18px;
+.skill-detail-markdown {
+  flex: 1;
+  min-height: 0;
+  padding: 20px 22px;
   overflow: auto;
   color: #344055;
-  font-family: 'SFMono-Regular', Consolas, monospace;
-  font-size: 12px;
-  line-height: 1.75;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.72;
+  letter-spacing: -0.005em;
   overflow-wrap: anywhere;
-  white-space: pre-wrap;
+}
+.skill-detail-markdown > :first-child {
+  margin-top: 0;
+}
+.skill-detail-markdown > :last-child {
+  margin-bottom: 0;
+}
+.skill-detail-markdown h1,
+.skill-detail-markdown h2,
+.skill-detail-markdown h3,
+.skill-detail-markdown h4,
+.skill-detail-markdown h5,
+.skill-detail-markdown h6 {
+  color: #202b3d;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+}
+.skill-detail-markdown h1 {
+  margin: 22px 0 12px;
+  font-size: 24px;
+  font-weight: 720;
+}
+.skill-detail-markdown h2 {
+  margin: 20px 0 10px;
+  font-size: 20px;
+  font-weight: 700;
+}
+.skill-detail-markdown h3 {
+  margin: 18px 0 8px;
+  font-size: 17px;
+  font-weight: 680;
+}
+.skill-detail-markdown h4,
+.skill-detail-markdown h5,
+.skill-detail-markdown h6 {
+  margin: 16px 0 7px;
+  font-size: 15px;
+  font-weight: 650;
+}
+.skill-detail-markdown p {
+  margin: 0 0 12px;
+}
+.skill-detail-markdown strong {
+  color: #273246;
+  font-weight: 650;
+}
+.skill-detail-markdown ul,
+.skill-detail-markdown ol {
+  margin: 8px 0 14px;
+  padding-left: 1.55em;
+}
+.skill-detail-markdown li {
+  padding-left: 0.15em;
+}
+.skill-detail-markdown li + li {
+  margin-top: 4px;
+}
+.skill-detail-markdown blockquote {
+  margin: 14px 0;
+  padding: 10px 14px;
+  border-left: 3px solid rgba(10, 132, 255, 0.58);
+  border-radius: 0 10px 10px 0;
+  background: rgba(10, 132, 255, 0.07);
+  color: #536278;
+}
+.skill-detail-markdown blockquote > :last-child {
+  margin-bottom: 0;
+}
+.skill-detail-markdown a {
+  color: #087cff;
+  font-weight: 550;
+  text-decoration: none;
+}
+.skill-detail-markdown a:hover,
+.skill-detail-markdown a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.skill-detail-markdown code {
+  padding: 2px 5px;
+  border: 1px solid rgba(202, 213, 229, 0.58);
+  border-radius: 6px;
+  background: rgba(236, 241, 248, 0.82);
+  color: #344055;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.88em;
+  font-weight: 500;
+}
+.skill-detail-markdown pre {
+  margin: 14px 0;
+  padding: 14px 16px;
+  overflow: auto;
+  border: 1px solid rgba(202, 213, 229, 0.58);
+  border-radius: 12px;
+  background: rgba(238, 243, 249, 0.88);
+  line-height: 1.65;
+}
+.skill-detail-markdown pre code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  white-space: pre;
+}
+.skill-detail-markdown table {
+  width: 100%;
+  min-width: 480px;
+  margin: 14px 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid rgba(202, 213, 229, 0.58);
+  border-radius: 12px;
+  font-size: 12px;
+}
+.skill-detail-markdown th,
+.skill-detail-markdown td {
+  padding: 9px 11px;
+  border-right: 1px solid rgba(202, 213, 229, 0.45);
+  border-bottom: 1px solid rgba(202, 213, 229, 0.45);
+  text-align: left;
+}
+.skill-detail-markdown th {
+  background: rgba(236, 241, 248, 0.82);
+  color: #4f5f74;
+  font-weight: 650;
+}
+.skill-detail-markdown tr:last-child td {
+  border-bottom: 0;
+}
+.skill-detail-markdown th:last-child,
+.skill-detail-markdown td:last-child {
+  border-right: 0;
+}
+.skill-detail-markdown hr {
+  height: 1px;
+  margin: 20px 0;
+  border: 0;
+  background: rgba(133, 151, 177, 0.24);
+}
+.skill-detail-markdown img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+.skill-detail-markdown input[type='checkbox'] {
+  margin-right: 7px;
+  accent-color: #087cff;
 }
 :root[data-theme='dark'] .skill-detail-hero {
   border-color: rgba(132, 166, 211, 0.2);
@@ -1433,8 +1590,40 @@ main {
 :root[data-theme='dark'] .skill-detail-document header {
   border-bottom-color: rgba(132, 166, 211, 0.18);
 }
-:root[data-theme='dark'] .skill-detail-document pre {
+:root[data-theme='dark'] .skill-detail-markdown {
   color: #d6e1f1;
+}
+:root[data-theme='dark'] .skill-detail-markdown h1,
+:root[data-theme='dark'] .skill-detail-markdown h2,
+:root[data-theme='dark'] .skill-detail-markdown h3,
+:root[data-theme='dark'] .skill-detail-markdown h4,
+:root[data-theme='dark'] .skill-detail-markdown h5,
+:root[data-theme='dark'] .skill-detail-markdown h6,
+:root[data-theme='dark'] .skill-detail-markdown strong {
+  color: #edf4ff;
+}
+:root[data-theme='dark'] .skill-detail-markdown blockquote {
+  border-left-color: rgba(90, 167, 255, 0.64);
+  background: rgba(90, 167, 255, 0.1);
+  color: #b8c5d8;
+}
+:root[data-theme='dark'] .skill-detail-markdown a {
+  color: #71b4ff;
+}
+:root[data-theme='dark'] .skill-detail-markdown code,
+:root[data-theme='dark'] .skill-detail-markdown pre,
+:root[data-theme='dark'] .skill-detail-markdown th {
+  border-color: rgba(132, 166, 211, 0.2);
+  background: rgba(7, 16, 31, 0.5);
+  color: #d6e1f1;
+}
+:root[data-theme='dark'] .skill-detail-markdown table,
+:root[data-theme='dark'] .skill-detail-markdown th,
+:root[data-theme='dark'] .skill-detail-markdown td {
+  border-color: rgba(132, 166, 211, 0.18);
+}
+:root[data-theme='dark'] .skill-detail-markdown hr {
+  background: rgba(132, 166, 211, 0.2);
 }
 @media (max-width: 760px) {
   .skill-detail-hero {
@@ -1446,9 +1635,6 @@ main {
   }
   .skill-detail-grid {
     grid-template-columns: minmax(0, 1fr);
-  }
-  .skill-detail-path {
-    grid-column: auto;
   }
 }
 .source-panel {

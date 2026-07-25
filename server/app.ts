@@ -12,6 +12,18 @@ import type { Plan, Source } from './types.js'
 
 const run = promisify(execFile)
 const pathInput = z.object({ path: z.string().min(1), name: z.string().trim().optional() })
+function stripFrontmatter(raw: string) {
+  const lines = raw
+    .replace(/^\uFEFF/, '')
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+  let start = 0
+  while (start < lines.length && !lines[start].trim()) start += 1
+  if (lines[start]?.trim() !== '---') return lines.join('\n').trim()
+  let end = start + 1
+  while (end < lines.length && lines[end].trim() !== '---') end += 1
+  return (end < lines.length ? lines.slice(end + 1) : lines).join('\n').trim()
+}
 export function createApp(store: Store, options: { staticRoot?: string } = {}) {
   const app = Fastify({ logger: false })
   const plans = new Map<string, Plan>()
@@ -98,8 +110,7 @@ export function createApp(store: Store, options: { staticRoot?: string } = {}) {
     if (!skill) throw new Error('技能不存在')
     try {
       const raw = await readFile(join(skill.path, 'SKILL.md'), 'utf8')
-      const content = raw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '').trim()
-      return { content }
+      return { content: stripFrontmatter(raw) }
     } catch {
       return { content: '' }
     }

@@ -27,6 +27,7 @@
     FolderOpened,
   } from '@element-plus/icons-vue'
   import { api, patch, post, remove } from './api'
+  import { renderMarkdown } from './markdown'
 
   type AnyRow = Record<string, any>
   type ProjectGroupSection = AnyRow & { projects: AnyRow[]; managed: boolean }
@@ -214,6 +215,7 @@
     ),
   )
   const linkedCount = computed(() => statuses.value.filter((s) => s.status === 'linked').length)
+  const skillDetailHtml = computed(() => renderMarkdown(skillDetailContent.value))
   const errors = computed(() => data.audit.filter((a) => a.level === 'error').length)
   const groupById = computed(() => new Map(data.groups.map((group) => [group.id, group])))
   const projectGroupSections = computed(() => {
@@ -1483,7 +1485,7 @@
   <el-dialog
     v-model="skillDetailDialog"
     title="技能详情"
-    width="760"
+    width="920"
     class="skill-detail-dialog"
     align-center
     destroy-on-close
@@ -1544,7 +1546,7 @@
             <small>SKILL.md</small>
           </div>
         </header>
-        <pre v-if="skillDetailContent">{{ skillDetailContent }}</pre>
+        <div v-if="skillDetailContent" class="skill-detail-markdown" v-html="skillDetailHtml"></div>
         <el-empty v-else-if="!skillDetailLoading" :image-size="52" description="暂无技能正文" />
       </section>
     </div>

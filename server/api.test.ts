@@ -43,7 +43,7 @@ describe('技能详情', () => {
     await mkdir(skillPath)
     await writeFile(
       join(skillPath, 'SKILL.md'),
-      '---\nname: detail-skill\ndescription: detail test\n---\n# 使用方法\n\n这是技能正文。',
+      '\uFEFF\r\n---\r\nname: detail-skill\r\ndescription: >-\r\n  detail test\r\n---\r\n# 使用方法\r\n\r\n这是技能正文。',
     )
     const store = new Store(join(root, 'data', 'test.db'))
     const source = store.addSource({ name: '详情技能', path: skillPath, mode: 'single' })
