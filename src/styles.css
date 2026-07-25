@@ -306,12 +306,13 @@ main {
 }
 .overview-grid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: clamp(12px, 1.8vh, 20px);
   min-height: 0;
   flex: 1;
 }
 .overview-grid .panel {
+  min-width: 0;
   min-height: 0;
   overflow: hidden;
 }
@@ -339,7 +340,7 @@ main {
 }
 .card-list {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 .mini-card,
@@ -352,7 +353,7 @@ main {
   border-radius: 16px;
 }
 .mini-card small {
-  max-width: 230px;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -368,6 +369,8 @@ main {
   min-width: 0;
 }
 .mini-card-title b {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

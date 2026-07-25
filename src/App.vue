@@ -612,7 +612,12 @@
             </div>
             <div v-if="data.projects.length" class="card-list">
               <div v-for="p in data.projects.slice(0, 4)" :key="p.id" class="mini-card">
-                <div class="folder-icon"><FolderAdd /></div>
+                <div
+                  class="folder-icon project-folder-icon"
+                  :style="{ '--group-color': groupForProject(p)?.color || '#94A3B8' }"
+                >
+                  <FolderAdd />
+                </div>
                 <div>
                   <div class="mini-card-title">
                     <b>{{ p.name }}</b>
@@ -638,6 +643,7 @@
             <div class="health">
               <el-progress
                 type="dashboard"
+                :stroke-width="10"
                 :percentage="data.audit.length ? Math.max(0, 100 - data.audit.length * 8) : 100"
                 :color="data.audit.length ? '#ff9f0a' : '#34c759'"
               />
