@@ -835,13 +835,6 @@ main {
 .batch-skill-table .el-table {
   height: 100%;
 }
-.batch-skill-table .skill-name > .el-icon {
-  color: #a7b3c5;
-  font-size: 16px;
-}
-.batch-skill-table .skill-name > .el-icon.on {
-  color: #ff9f0a;
-}
 .apple-inline-alert {
   margin-top: 18px;
   border: 1px solid rgba(202, 213, 229, 0.56);
@@ -1092,11 +1085,11 @@ main {
   gap: 10px;
   align-items: flex-start;
 }
-.table-panel .skill-name > div {
+.skill-name > div {
   min-width: 0;
   overflow: hidden;
 }
-.table-panel .skill-name b {
+.skill-name b {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1130,7 +1123,8 @@ main {
     color 0.18s ease,
     box-shadow 0.18s ease;
 }
-.table-panel .star {
+.table-panel .star,
+.batch-skill-table .star {
   align-self: center;
 }
 .star:hover {

@@ -1282,9 +1282,17 @@
         <el-table-column label="技能" min-width="280">
           <template #default="{ row }">
             <div class="skill-name">
-              <el-icon :class="{ on: row.favorite }"><Star /></el-icon>
+              <button
+                class="star"
+                type="button"
+                :aria-label="`${row.favorite ? '取消收藏' : '收藏'}技能 ${row.name}`"
+                :aria-pressed="row.favorite"
+                @click.stop="toggleFavorite(row)"
+              >
+                <el-icon :class="{ on: row.favorite }"><Star /></el-icon>
+              </button>
               <div>
-                <b>{{ row.name }}</b>
+                <b :title="row.name">{{ row.name }}</b>
                 <small>{{ row.description || row.path }}</small>
               </div>
             </div>
