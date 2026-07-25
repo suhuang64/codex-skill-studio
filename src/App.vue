@@ -720,6 +720,7 @@
                 <div v-if="group.managed" class="group-actions">
                   <el-button
                     :icon="MagicStick"
+                    :aria-label="`批量配置项目组 ${group.name} 的技能`"
                     :disabled="!group.projects.length"
                     @click="openGroupSkills(group)"
                     >批量配置技能</el-button
@@ -762,6 +763,7 @@
                     <div class="apple-select row-group-select">
                       <el-select
                         :model-value="p.groupId"
+                        :aria-label="`${p.name} 所属项目组`"
                         clearable
                         placeholder="未分组"
                         popper-class="apple-select-popper"
@@ -780,11 +782,20 @@
                         </el-option>
                       </el-select>
                     </div>
-                    <el-button class="apple-row-button" :icon="Tools" @click="openProjectSkills(p)"
+                    <el-button
+                      class="apple-row-button"
+                      :icon="Tools"
+                      :aria-label="`管理项目 ${p.name} 的技能`"
+                      @click="openProjectSkills(p)"
                       >管理技能</el-button
                     >
                     <el-dropdown trigger="click"
-                      ><el-button class="apple-icon-button" :icon="MoreFilled" text />
+                      ><el-button
+                        class="apple-icon-button"
+                        :icon="MoreFilled"
+                        :aria-label="`${p.name} 的更多操作`"
+                        text
+                      />
                       <template #dropdown
                         ><el-dropdown-menu
                           ><el-dropdown-item @click="confirmDelete('projects', p)"
@@ -818,7 +829,12 @@
           </div>
         </div>
         <div class="toolbar glass">
-          <el-select v-model="selectedProject" placeholder="选择项目" style="width: 240px">
+          <el-select
+            v-model="selectedProject"
+            aria-label="选择项目"
+            placeholder="选择项目"
+            style="width: 240px"
+          >
             <el-option-group
               v-for="group in projectSelectGroups"
               :key="group.id"
@@ -835,6 +851,8 @@
           />
           <el-segmented
             v-model="statusFilter"
+            class="apple-segmented"
+            aria-label="技能链接状态"
             :options="[
               { label: '全部', value: 'all' },
               { label: '已链接', value: 'linked' },
@@ -844,6 +862,7 @@
           />
           <el-select
             v-model="sourceFilter"
+            aria-label="筛选技能源"
             placeholder="筛选技能源"
             clearable
             style="width: 230px"
@@ -878,7 +897,13 @@
                 min-width="240"
                 ><template #default="{ row }"
                   ><div class="skill-name">
-                    <button class="star" @click.stop="toggleFavorite(row)">
+                    <button
+                      class="star"
+                      type="button"
+                      :aria-label="`${row.favorite ? '取消收藏' : '收藏'}技能 ${row.name}`"
+                      :aria-pressed="row.favorite"
+                      @click.stop="toggleFavorite(row)"
+                    >
                       <el-icon :class="{ on: row.favorite }"><Star /></el-icon>
                     </button>
                     <div>
@@ -910,7 +935,9 @@
                 ></el-table-column
               ><el-table-column label="" width="74"
                 ><template #default="{ row }"
-                  ><el-button text @click="editSkill(row)">编辑</el-button></template
+                  ><el-button text :aria-label="`编辑技能 ${row.name}`" @click="editSkill(row)"
+                    >编辑</el-button
+                  ></template
                 ></el-table-column
               ></el-table
             >
@@ -936,7 +963,13 @@
                     {{ data.skills.filter((k) => k.sourceId === s.id).length }} 项</small
                   >
                 </div>
-                <el-button text type="danger" @click="confirmDelete('sources', s)">移除</el-button>
+                <el-button
+                  text
+                  type="danger"
+                  :aria-label="`移除技能源 ${s.name}`"
+                  @click="confirmDelete('sources', s)"
+                  >移除</el-button
+                >
               </div>
             </div>
             <el-button class="full" plain :icon="Plus" @click="sourceDialog = true"
@@ -973,8 +1006,15 @@
               <span class="entity-meta"
                 >{{ b.skillIds.length }} 个技能 · {{ b.projectIds.length }} 个项目</span
               >
-              <el-button @click="openBundleApply(b)">应用到项目</el-button
-              ><el-button text type="danger" @click="confirmDelete('bundles', b)">删除</el-button>
+              <el-button :aria-label="`应用技能组合 ${b.name} 到项目`" @click="openBundleApply(b)"
+                >应用到项目</el-button
+              ><el-button
+                text
+                type="danger"
+                :aria-label="`删除技能组合 ${b.name}`"
+                @click="confirmDelete('bundles', b)"
+                >删除</el-button
+              >
             </article>
             <button class="entity-row add-row" @click="bundleDialog = true">
               <Plus /><span>创建技能组合</span>
@@ -1049,7 +1089,12 @@
               <h3>外观</h3>
               <p>跟随系统会在 macOS 外观变化时自动切换。</p>
             </div>
-            <el-segmented v-model="themeMode" :options="themeOptions" aria-label="外观模式" />
+            <el-segmented
+              v-model="themeMode"
+              class="apple-segmented"
+              :options="themeOptions"
+              aria-label="外观模式"
+            />
           </article>
           <article class="setting-card glass">
             <div class="setting-icon"><Download /></div>
@@ -1103,22 +1148,33 @@
     ></el-dialog
   >
   <el-dialog v-model="sourceDialog" title="添加技能源" width="560"
-    ><el-form label-position="top"
+    ><el-form class="apple-dialog-form source-form" label-position="top"
       ><el-form-item label="来源类型"
-        ><el-radio-group v-model="sourceForm.mode"
-          ><el-radio-button value="pack">技能包（递归发现）</el-radio-button
-          ><el-radio-button value="single">单个技能</el-radio-button></el-radio-group
+        ><el-segmented
+          v-model="sourceForm.mode"
+          class="apple-segmented"
+          :options="[
+            { label: '技能包（递归发现）', value: 'pack' },
+            { label: '单个技能', value: 'single' },
+          ]"
+        />
         ></el-form-item
       ><el-form-item label="目录"
-        ><el-input v-model="sourceForm.path" placeholder="选择含 SKILL.md 的技能或技能包"
+        ><el-input
+          v-model="sourceForm.path"
+          class="apple-dialog-input"
+          placeholder="选择含 SKILL.md 的技能或技能包"
           ><template #append
-            ><el-button @click="choose(sourceForm, '选择技能或技能包目录')"
+            ><el-button :icon="FolderOpened" @click="choose(sourceForm, '选择技能或技能包目录')"
               >选择…</el-button
             ></template
           ></el-input
         ></el-form-item
       ><el-form-item label="来源名称（可选）"
-        ><el-input v-model="sourceForm.name" placeholder="默认使用目录名" /></el-form-item></el-form
+        ><el-input
+          v-model="sourceForm.name"
+          class="apple-dialog-input"
+          placeholder="默认使用目录名" /></el-form-item></el-form
     ><template #footer
       ><el-button @click="sourceDialog = false">取消</el-button
       ><el-button type="primary" :disabled="!sourceForm.path" @click="addSource"
@@ -1127,13 +1183,19 @@
     ></el-dialog
   >
   <el-dialog v-model="bundleDialog" title="新建技能组合" width="620"
-    ><el-form label-position="top"
-      ><el-form-item label="组合名称"><el-input v-model="bundleForm.name" /></el-form-item
+    ><el-form class="apple-dialog-form bundle-form" label-position="top"
+      ><el-form-item label="组合名称"
+        ><el-input v-model="bundleForm.name" class="apple-dialog-input" /></el-form-item
       ><el-form-item label="说明"
-        ><el-input v-model="bundleForm.description" type="textarea" /></el-form-item
+        ><el-input
+          v-model="bundleForm.description"
+          class="apple-dialog-input"
+          type="textarea" /></el-form-item
       ><el-form-item label="包含技能"
         ><el-select
           v-model="bundleForm.skillIds"
+          class="apple-dialog-input full-dialog-select"
+          aria-label="包含技能"
           multiple
           filterable
           collapse-tags
@@ -1183,6 +1245,7 @@
         <el-segmented
           v-model="groupBatch.action"
           class="apple-segmented"
+          aria-label="批量操作方式"
           :options="[
             { label: '加入链接', value: 'link' },
             { label: '替换异常链接', value: 'replace' },
@@ -1271,15 +1334,16 @@
     </template>
   </el-dialog>
   <el-dialog v-model="skillDialog" title="编辑技能" width="520"
-    ><el-form label-position="top"
+    ><el-form class="apple-dialog-form skill-form" label-position="top"
       ><el-form-item label="项目内链接名"
-        ><el-input v-model="skillForm.alias" />
+        ><el-input v-model="skillForm.alias" class="apple-dialog-input" />
         <div class="el-form-item__description">
           仅影响以后创建的软链接名称，不修改技能源目录。
         </div></el-form-item
       ><el-form-item label="标签"
         ><el-input
           v-model="skillForm.tags"
+          class="apple-dialog-input"
           placeholder="用逗号分隔，例如：论文, 前端, 常用" /></el-form-item></el-form
     ><template #footer
       ><el-button @click="skillDialog = false">取消</el-button
@@ -1287,9 +1351,13 @@
     ></el-dialog
   >
   <el-dialog v-model="bundleApplyDialog" title="应用技能组合" width="520"
-    ><el-form label-position="top"
+    ><el-form class="apple-dialog-form bundle-apply-form" label-position="top"
       ><el-form-item label="目标项目"
-        ><el-select v-model="bundleApply.projectId" style="width: 100%"
+        ><el-select
+          v-model="bundleApply.projectId"
+          class="apple-dialog-input full-dialog-select"
+          aria-label="目标项目"
+          style="width: 100%"
           ><el-option
             v-for="p in data.projects"
             :key="p.id"
