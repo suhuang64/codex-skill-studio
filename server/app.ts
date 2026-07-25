@@ -1,7 +1,7 @@
 import Fastify from 'fastify'
 import fastifyStatic from '@fastify/static'
 import { execFile } from 'node:child_process'
-import { access, realpath } from 'node:fs/promises'
+import { access, readFile, realpath } from 'node:fs/promises'
 import { promisify } from 'node:util'
 import { basename, join, resolve } from 'node:path'
 import { z } from 'zod'
@@ -92,6 +92,17 @@ export function createApp(store: Store, options: { staticRoot?: string } = {}) {
       store.run('UPDATE skills SET favorite=? WHERE id=?', body.favorite ? 1 : 0, sid)
     if (body.tags) store.run('UPDATE skills SET tags=? WHERE id=?', JSON.stringify(body.tags), sid)
     return { ok: true }
+  })
+  app.get('/api/skills/:id/detail', async (req) => {
+    const skill = store.skills().find((item) => item.id === (req.params as any).id)
+    if (!skill) throw new Error('技能不存在')
+    try {
+      const raw = await readFile(join(skill.path, 'SKILL.md'), 'utf8')
+      const content = raw.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, '').trim()
+      return { content }
+    } catch {
+      return { content: '' }
+    }
   })
   app.get('/api/projects/:id/status', async (req) => {
     const project = store.projects().find((p) => p.id === (req.params as any).id)

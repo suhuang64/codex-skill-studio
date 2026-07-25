@@ -117,6 +117,7 @@
     groupDialog = ref(false),
     groupSkillsDialog = ref(false),
     skillDialog = ref(false),
+    skillDetailDialog = ref(false),
     bundleApplyDialog = ref(false)
   const projectForm = reactive({ name: '', path: '' }),
     sourceForm = reactive({ name: '', path: '', mode: 'pack' }),
@@ -135,6 +136,9 @@
     applying = ref(false),
     groupSaving = ref(false),
     groupBatchLoading = ref(false),
+    skillDetailLoading = ref(false),
+    skillDetail = ref<AnyRow | null>(null),
+    skillDetailContent = ref(''),
     editingGroupId = ref(''),
     planScopeLabel = ref('')
   const nav = [
@@ -319,8 +323,30 @@
     }
   }
   async function toggleFavorite(row: AnyRow) {
-    await patch(`/skills/${row.id}`, { favorite: !row.favorite })
+    const favorite = !row.favorite
+    await patch(`/skills/${row.id}`, { favorite })
+    if (skillDetail.value?.id === row.id) skillDetail.value = { ...skillDetail.value, favorite }
     await refresh()
+  }
+  async function openSkillDetail(row: AnyRow, _column?: AnyRow, event?: Event) {
+    const target = event?.target
+    if (
+      target instanceof Element &&
+      target.closest('button, .el-checkbox, .el-table__selection-column')
+    )
+      return
+    skillDetail.value = { ...row }
+    skillDetailContent.value = ''
+    skillDetailDialog.value = true
+    skillDetailLoading.value = true
+    try {
+      const detail = await api(`/skills/${row.id}/detail`)
+      if (skillDetail.value?.id === row.id) skillDetailContent.value = detail.content || ''
+    } catch (e: any) {
+      ElMessage.error(`读取技能详情失败：${e.message}`)
+    } finally {
+      if (skillDetail.value?.id === row.id) skillDetailLoading.value = false
+    }
   }
   async function stage(action: 'link' | 'replace' | 'remove') {
     if (!selectedProject.value || !selectedSkills.value.length)
@@ -478,6 +504,11 @@
   function editSkill(row: AnyRow) {
     Object.assign(skillForm, { id: row.id, alias: row.alias, tags: row.tags.join(', ') })
     skillDialog.value = true
+  }
+  function editSkillFromDetail() {
+    if (!skillDetail.value) return
+    skillDetailDialog.value = false
+    editSkill(skillDetail.value)
   }
   async function saveSkill() {
     try {
@@ -911,9 +942,11 @@
               </div>
             </div>
             <el-table
+              class="skill-library-table"
               :data="filteredSkills"
               row-key="id"
               @selection-change="selectedSkills = $event"
+              @row-click="openSkillDetail"
               height="100%"
               empty-text="当前筛选没有技能"
               ><el-table-column
@@ -933,7 +966,13 @@
                       <el-icon :class="{ on: row.favorite }"><Star /></el-icon>
                     </button>
                     <div>
-                      <b :title="row.name">{{ row.name }}</b
+                      <button
+                        class="skill-detail-trigger"
+                        type="button"
+                        :title="row.name"
+                        @click.stop="openSkillDetail(row)"
+                      >
+                        {{ row.name }}</button
                       ><small>{{ row.description }}</small>
                     </div>
                   </div></template
@@ -961,7 +1000,7 @@
                 ></el-table-column
               ><el-table-column label="" width="92" align="center"
                 ><template #default="{ row }"
-                  ><el-button text :aria-label="`编辑技能 ${row.name}`" @click="editSkill(row)"
+                  ><el-button text :aria-label="`编辑技能 ${row.name}`" @click.stop="editSkill(row)"
                     >编辑</el-button
                   ></template
                 ></el-table-column
@@ -1439,6 +1478,79 @@
         @click="stageGroupSkills"
         >预览变更计划</el-button
       >
+    </template>
+  </el-dialog>
+  <el-dialog
+    v-model="skillDetailDialog"
+    title="技能详情"
+    width="760"
+    class="skill-detail-dialog"
+    align-center
+    destroy-on-close
+  >
+    <div v-if="skillDetail" class="skill-detail-layout">
+      <section class="skill-detail-hero">
+        <div class="skill-detail-icon"><Collection /></div>
+        <div class="skill-detail-heading">
+          <span class="eyebrow">SKILL DETAIL</span>
+          <h2>{{ skillDetail.name }}</h2>
+          <p>{{ skillDetail.description || '暂无描述' }}</p>
+        </div>
+        <button
+          class="star skill-detail-favorite"
+          type="button"
+          :aria-label="`${skillDetail.favorite ? '取消收藏' : '收藏'}技能 ${skillDetail.name}`"
+          :aria-pressed="skillDetail.favorite"
+          @click="toggleFavorite(skillDetail)"
+        >
+          <el-icon :class="{ on: skillDetail.favorite }"><Star /></el-icon>
+        </button>
+      </section>
+
+      <div class="skill-detail-badges">
+        <span class="status" :class="skillDetail.status">
+          {{ linkStatusText[skillDetail.status] || '状态未知' }}
+        </span>
+        <el-tag :type="skillDetail.available ? 'success' : 'danger'" round>
+          {{ skillDetail.available ? '来源可用' : '来源不可用' }}
+        </el-tag>
+        <el-tag v-for="tag in skillDetail.tags" :key="tag" round>{{ tag }}</el-tag>
+      </div>
+
+      <dl class="skill-detail-grid">
+        <div>
+          <dt>技能源</dt>
+          <dd>{{ sourceName(skillDetail) }}</dd>
+          <small>{{ sourceMode(skillDetail) }}</small>
+        </div>
+        <div>
+          <dt>项目内链接名</dt>
+          <dd>
+            <code>{{ skillDetail.alias }}</code>
+          </dd>
+        </div>
+        <div class="skill-detail-path">
+          <dt>本地路径</dt>
+          <dd>
+            <code :title="skillDetail.path">{{ skillDetail.path }}</code>
+          </dd>
+        </div>
+      </dl>
+
+      <section class="skill-detail-document" v-loading="skillDetailLoading">
+        <header>
+          <div>
+            <b>技能说明</b>
+            <small>SKILL.md</small>
+          </div>
+        </header>
+        <pre v-if="skillDetailContent">{{ skillDetailContent }}</pre>
+        <el-empty v-else-if="!skillDetailLoading" :image-size="52" description="暂无技能正文" />
+      </section>
+    </div>
+    <template #footer>
+      <el-button @click="skillDetailDialog = false">关闭</el-button>
+      <el-button type="primary" :icon="EditPen" @click="editSkillFromDetail">编辑技能</el-button>
     </template>
   </el-dialog>
   <el-dialog v-model="skillDialog" title="编辑技能" width="520"

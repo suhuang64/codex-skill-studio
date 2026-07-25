@@ -35,6 +35,30 @@ describe('无请求体管理接口', () => {
   })
 })
 
+describe('技能详情', () => {
+  it('按技能 ID 安全读取 SKILL.md 正文并移除元数据头', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'skill-manager-detail-'))
+    roots.push(root)
+    const skillPath = join(root, 'skill')
+    await mkdir(skillPath)
+    await writeFile(
+      join(skillPath, 'SKILL.md'),
+      '---\nname: detail-skill\ndescription: detail test\n---\n# 使用方法\n\n这是技能正文。',
+    )
+    const store = new Store(join(root, 'data', 'test.db'))
+    const source = store.addSource({ name: '详情技能', path: skillPath, mode: 'single' })
+    await scanSource(store, source as any)
+    const app = createApp(store)
+    const response = await app.inject({
+      method: 'GET',
+      url: `/api/skills/${store.skills()[0].id}/detail`,
+    })
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toEqual({ content: '# 使用方法\n\n这是技能正文。' })
+    await app.close()
+  })
+})
+
 describe('配置导入导出', () => {
   it('完整恢复项目组、技能偏好、技能组合与项目绑定', async () => {
     const root = await mkdtemp(join(tmpdir(), 'skill-manager-config-'))
