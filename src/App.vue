@@ -1016,9 +1016,6 @@
                 >删除</el-button
               >
             </article>
-            <button class="entity-row add-row" @click="bundleDialog = true">
-              <Plus /><span>创建技能组合</span>
-            </button>
           </div>
         </div>
       </section>

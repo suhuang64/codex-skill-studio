@@ -995,17 +995,6 @@ main {
   width: 150px;
   flex: none;
 }
-.add-row {
-  min-height: 76px;
-  border: 1px dashed rgba(78, 105, 145, 0.3);
-  gap: 13px;
-  justify-content: center;
-  color: #718096;
-  cursor: pointer;
-}
-.add-row svg {
-  width: 30px;
-}
 .toolbar {
   border-radius: 20px;
   padding: 14px;
@@ -2097,10 +2086,6 @@ main {
   border-color: rgba(10, 132, 255, 0.38) !important;
   background: rgba(255, 255, 255, 0.08) !important;
   color: #8fc3ff !important;
-}
-:root[data-theme='dark'] .add-row {
-  color: #afbdd0;
-  border-color: rgba(140, 171, 211, 0.32);
 }
 .el-tag {
   margin-right: 4px;
