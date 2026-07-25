@@ -907,7 +907,7 @@
                       <el-icon :class="{ on: row.favorite }"><Star /></el-icon>
                     </button>
                     <div>
-                      <b>{{ row.name }}</b
+                      <b :title="row.name">{{ row.name }}</b
                       ><small>{{ row.description }}</small>
                     </div>
                   </div></template
