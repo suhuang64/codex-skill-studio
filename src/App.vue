@@ -1173,9 +1173,7 @@
           :options="[
             { label: '技能包（递归发现）', value: 'pack' },
             { label: '单个技能', value: 'single' },
-          ]"
-        />
-        ></el-form-item
+          ]" /></el-form-item
       ><el-form-item label="目录"
         ><el-input
           v-model="sourceForm.path"
