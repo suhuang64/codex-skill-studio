@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
+  import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import {
     FolderAdd,
@@ -105,6 +105,7 @@
     projectGroupFilter = ref('all'),
     projectGroupSort = ref<'name' | 'count' | 'created'>('name'),
     groupBatchSourceFilter = ref('all'),
+    bundleSourceFilter = ref('all'),
     selectedProject = ref(''),
     statuses = ref<AnyRow[]>([]),
     selectedSkills = ref<AnyRow[]>([]),
@@ -129,6 +130,8 @@
     skillForm = reactive({ id: '', alias: '', tags: '' }),
     bundleApply = reactive({ bundleId: '', projectId: '' })
   const currentPlan = ref<AnyRow | null>(null),
+    bundleSkillTable = ref<any>(),
+    groupBatchSkillTable = ref<any>(),
     applying = ref(false),
     groupSaving = ref(false),
     groupBatchLoading = ref(false),
@@ -199,6 +202,11 @@
     data.skills.filter(
       (skill) =>
         groupBatchSourceFilter.value === 'all' || skill.sourceId === groupBatchSourceFilter.value,
+    ),
+  )
+  const filteredBundleSkills = computed(() =>
+    data.skills.filter(
+      (skill) => bundleSourceFilter.value === 'all' || skill.sourceId === bundleSourceFilter.value,
     ),
   )
   const linkedCount = computed(() => statuses.value.filter((s) => s.status === 'linked').length)
@@ -370,6 +378,15 @@
       ElMessage.error(e.message)
     }
   }
+  function openBundleDialog() {
+    Object.assign(bundleForm, { name: '', description: '', skillIds: [] })
+    bundleSourceFilter.value = 'all'
+    bundleDialog.value = true
+    nextTick(() => bundleSkillTable.value?.clearSelection())
+  }
+  function handleBundleSkillSelection(rows: AnyRow[]) {
+    bundleForm.skillIds = rows.map((row) => row.id)
+  }
   function openCreateGroup() {
     editingGroupId.value = ''
     Object.assign(groupForm, { name: '', color: '#007AFF' })
@@ -427,6 +444,7 @@
     Object.assign(groupBatch, { groupId: group.id, skillIds: [], action: 'link' })
     groupBatchSourceFilter.value = 'all'
     groupSkillsDialog.value = true
+    nextTick(() => groupBatchSkillTable.value?.clearSelection())
   }
   function handleGroupBatchSkillSelection(rows: AnyRow[]) {
     groupBatch.skillIds = rows.map((row) => row.id)
@@ -892,9 +910,11 @@
               @selection-change="selectedSkills = $event"
               height="100%"
               empty-text="当前筛选没有技能"
-              ><el-table-column type="selection" width="48" /><el-table-column
-                label="技能"
-                min-width="240"
+              ><el-table-column
+                type="selection"
+                width="48"
+                :reserve-selection="true"
+              /><el-table-column label="技能" min-width="240"
                 ><template #default="{ row }"
                   ><div class="skill-name">
                     <button
@@ -986,7 +1006,7 @@
             <h1>技能组合</h1>
             <p>把经常一起使用的技能保存成可复用方案，并用于检查项目配置漂移。</p>
           </div>
-          <el-button type="primary" :icon="Plus" @click="bundleDialog = true">新建组合</el-button>
+          <el-button type="primary" :icon="Plus" @click="openBundleDialog">新建组合</el-button>
         </div>
         <div class="content-frame glass">
           <div class="entity-list scroll-list">
@@ -1179,37 +1199,104 @@
       ></template
     ></el-dialog
   >
-  <el-dialog v-model="bundleDialog" title="新建技能组合" width="620"
-    ><el-form class="apple-dialog-form bundle-form" label-position="top"
-      ><el-form-item label="组合名称"
-        ><el-input v-model="bundleForm.name" class="apple-dialog-input" /></el-form-item
-      ><el-form-item label="说明"
-        ><el-input
-          v-model="bundleForm.description"
-          class="apple-dialog-input"
-          type="textarea" /></el-form-item
-      ><el-form-item label="包含技能"
-        ><el-select
-          v-model="bundleForm.skillIds"
-          class="apple-dialog-input full-dialog-select"
-          aria-label="包含技能"
-          multiple
-          filterable
-          collapse-tags
-          placeholder="选择技能"
-          style="width: 100%"
-          ><el-option
-            v-for="s in data.skills"
-            :key="s.id"
-            :label="s.name"
-            :value="s.id" /></el-select></el-form-item></el-form
-    ><template #footer
-      ><el-button @click="bundleDialog = false">取消</el-button
-      ><el-button type="primary" :disabled="!bundleForm.name" @click="createBundle"
+  <el-dialog v-model="bundleDialog" title="新建技能组合" width="960" class="apple-workflow-dialog">
+    <el-form class="apple-dialog-form bundle-form" label-position="top">
+      <div class="bundle-meta-grid">
+        <el-form-item label="组合名称">
+          <el-input v-model="bundleForm.name" class="apple-dialog-input" />
+        </el-form-item>
+        <el-form-item label="说明">
+          <el-input
+            v-model="bundleForm.description"
+            class="apple-dialog-input bundle-description-input"
+            type="textarea"
+          />
+        </el-form-item>
+      </div>
+      <el-form-item label="选择技能">
+        <div class="batch-skill-picker">
+          <div class="apple-select batch-source-select">
+            <el-select
+              v-model="bundleSourceFilter"
+              aria-label="筛选技能源"
+              popper-class="apple-select-popper"
+            >
+              <el-option
+                v-for="option in sourceOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+              />
+            </el-select>
+          </div>
+          <span class="batch-selection-count">已选择 {{ bundleForm.skillIds.length }} 项</span>
+        </div>
+      </el-form-item>
+    </el-form>
+    <div class="batch-skill-table bundle-skill-table glass">
+      <el-table
+        ref="bundleSkillTable"
+        :data="filteredBundleSkills"
+        row-key="id"
+        height="360"
+        empty-text="当前筛选没有技能"
+        @selection-change="handleBundleSkillSelection"
+      >
+        <el-table-column
+          type="selection"
+          width="48"
+          :reserve-selection="true"
+          :selectable="isGroupBatchSkillSelectable"
+        />
+        <el-table-column label="技能" min-width="280">
+          <template #default="{ row }">
+            <div class="skill-name">
+              <button
+                class="star"
+                type="button"
+                :aria-label="`${row.favorite ? '取消收藏' : '收藏'}技能 ${row.name}`"
+                :aria-pressed="row.favorite"
+                @click.stop="toggleFavorite(row)"
+              >
+                <el-icon :class="{ on: row.favorite }"><Star /></el-icon>
+              </button>
+              <div>
+                <b :title="row.name">{{ row.name }}</b>
+                <small>{{ row.description || row.path }}</small>
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="技能源" width="190">
+          <template #default="{ row }">
+            <div class="source-text">
+              <b>{{ sourceName(row) }}</b>
+              <small>{{ sourceMode(row) }}</small>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="alias" label="链接名" width="150" />
+        <el-table-column label="状态" width="110">
+          <template #default="{ row }">
+            <span class="status" :class="row.available ? 'linked' : 'broken'">{{
+              row.available ? '可用' : '不可用'
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="标签" width="150">
+          <template #default="{ row }">
+            <el-tag v-for="t in row.tags.slice(0, 2)" :key="t" round>{{ t }}</el-tag>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <template #footer>
+      <el-button @click="bundleDialog = false">取消</el-button>
+      <el-button type="primary" :disabled="!bundleForm.name" @click="createBundle"
         >创建组合</el-button
-      ></template
-    ></el-dialog
-  >
+      >
+    </template>
+  </el-dialog>
   <el-dialog v-model="groupDialog" :title="editingGroupId ? '编辑项目组' : '新建项目组'" width="480"
     ><el-form class="apple-dialog-form group-form" label-position="top"
       ><el-form-item label="项目组名称"
@@ -1272,13 +1359,19 @@
     </el-form>
     <div class="batch-skill-table glass">
       <el-table
+        ref="groupBatchSkillTable"
         :data="filteredGroupBatchSkills"
         row-key="id"
         height="360"
         empty-text="当前筛选没有技能"
         @selection-change="handleGroupBatchSkillSelection"
       >
-        <el-table-column type="selection" width="48" :selectable="isGroupBatchSkillSelectable" />
+        <el-table-column
+          type="selection"
+          width="48"
+          :reserve-selection="true"
+          :selectable="isGroupBatchSkillSelectable"
+        />
         <el-table-column label="技能" min-width="280">
           <template #default="{ row }">
             <div class="skill-name">

@@ -767,8 +767,22 @@ main {
   display: grid;
   gap: 16px;
 }
-.group-skills-form .el-form-item {
+.group-skills-form .el-form-item,
+.bundle-form .el-form-item {
   margin-bottom: 0;
+}
+.bundle-form {
+  display: grid;
+  gap: 16px;
+}
+.bundle-meta-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  align-items: start;
+  gap: 16px;
+}
+.bundle-description-input .el-textarea__inner {
+  min-height: 72px;
 }
 .apple-segmented {
   --el-segmented-item-selected-color: #ffffff;
@@ -1351,6 +1365,11 @@ main {
   .orb {
     flex: 0 0 auto;
     margin-left: 24px;
+  }
+}
+@media (max-width: 760px) {
+  .bundle-meta-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 .audit-row > div:nth-child(2),
