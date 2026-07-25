@@ -953,7 +953,7 @@
                     t
                   }}</el-tag></template
                 ></el-table-column
-              ><el-table-column label="" width="74"
+              ><el-table-column label="" width="92" align="center"
                 ><template #default="{ row }"
                   ><el-button text :aria-label="`编辑技能 ${row.name}`" @click="editSkill(row)"
                     >编辑</el-button
