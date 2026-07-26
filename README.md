@@ -38,7 +38,7 @@ npm run dev
 - 永不覆盖或移除普通文件、真实目录。
 - 只有明确的替换操作才会替换现有软链接。
 - 所有写操作先生成计划，确认后应用；批量失败会回滚已完成项。
-- 数据保存在 `~/Library/Application Support/Codex Skill Manager/manager.db`。
+- 数据默认保存在项目根目录的 `manager.db`；可通过 `SKILL_MANAGER_DATA_DIR` 指定其他目录。
 
 ## 测试
 

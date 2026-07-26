@@ -1,1 +1,1 @@
-{"root":["./src/api.ts","./src/env.d.ts","./src/main.ts","./src/app.vue"],"version":"5.9.3"}
+{"root":["./src/api.ts","./src/env.d.ts","./src/main.ts","./src/markdown.ts","./src/app.vue"],"version":"5.9.3"}

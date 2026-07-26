@@ -1,15 +1,12 @@
 import { execFile } from 'node:child_process'
 import { existsSync } from 'node:fs'
-import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { Store } from './db.js'
 import { createApp } from './app.js'
 
 const dev = process.argv.includes('--dev')
 const port = 8765
-const dataDir =
-  process.env.SKILL_MANAGER_DATA_DIR ||
-  join(homedir(), 'Library', 'Application Support', 'Codex Skill Manager')
+const dataDir = process.env.SKILL_MANAGER_DATA_DIR || process.cwd()
 const staticRoot = join(process.cwd(), 'dist', 'client')
 const store = new Store(join(dataDir, 'manager.db'))
 const app = createApp(store, {

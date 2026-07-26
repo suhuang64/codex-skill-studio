@@ -1261,31 +1261,37 @@ main {
   cursor: pointer;
 }
 .skill-detail-dialog {
-  height: min(800px, calc(100vh - 48px));
+  height: min(840px, calc(100vh - 48px));
   max-width: calc(100vw - 48px);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
+.skill-detail-dialog .el-dialog__header {
+  padding: 14px 16px 4px;
+}
 .skill-detail-dialog .el-dialog__body {
   flex: 1;
   min-height: 0;
-  padding-top: 10px;
+  padding: 8px 16px 0;
   overflow: hidden;
+}
+.skill-detail-dialog .el-dialog__footer {
+  padding: 10px 16px 14px;
 }
 .skill-detail-layout {
   height: 100%;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 .skill-detail-hero {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 16px;
-  padding: 20px;
+  gap: 12px;
+  padding: 14px 16px;
   border: 1px solid rgba(202, 213, 229, 0.58);
   border-radius: 20px;
   background:
@@ -1296,8 +1302,8 @@ main {
     0 12px 30px rgba(41, 67, 107, 0.07);
 }
 .skill-detail-icon {
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   border-radius: 16px;
@@ -1309,17 +1315,17 @@ main {
 }
 .skill-detail-icon .el-icon,
 .skill-detail-icon svg {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 .skill-detail-heading {
   min-width: 0;
 }
 .skill-detail-heading h2 {
-  margin: 4px 0 6px;
+  margin: 2px 0 4px;
   overflow: hidden;
   color: #172033;
-  font-size: 23px;
+  font-size: 21px;
   letter-spacing: -0.02em;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1329,9 +1335,9 @@ main {
   margin: 0;
   overflow: hidden;
   color: #66758b;
-  line-height: 1.6;
+  line-height: 1.5;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 3;
 }
 .skill-detail-favorite {
   align-self: start;
@@ -1340,23 +1346,29 @@ main {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+}
+.skill-detail-badges .status {
+  padding: 4px 8px;
+}
+.skill-detail-badges .el-tag {
+  height: 24px;
 }
 .skill-detail-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
   margin: 0;
 }
 .skill-detail-grid > div {
   min-width: 0;
-  padding: 14px 16px;
+  padding: 10px 12px;
   border: 1px solid rgba(202, 213, 229, 0.54);
   border-radius: 14px;
   background: var(--surface-soft);
 }
 .skill-detail-grid dt {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   color: #7a879a;
   font-size: 11px;
   font-weight: 700;
@@ -1371,7 +1383,7 @@ main {
 }
 .skill-detail-grid small {
   display: block;
-  margin-top: 4px;
+  margin-top: 2px;
   color: #7a879a;
 }
 .skill-detail-grid code {
@@ -1393,15 +1405,20 @@ main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
+  padding: 10px 14px;
   border-bottom: 1px solid rgba(202, 213, 229, 0.48);
 }
 .skill-detail-document header b,
 .skill-detail-document header small {
   display: block;
 }
+.skill-detail-document header > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
 .skill-detail-document header small {
-  margin-top: 2px;
+  margin-top: 0;
   color: #7a879a;
 }
 .skill-detail-markdown {

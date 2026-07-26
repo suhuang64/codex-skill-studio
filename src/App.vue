@@ -1485,7 +1485,7 @@
   <el-dialog
     v-model="skillDetailDialog"
     title="技能详情"
-    width="920"
+    width="1080"
     class="skill-detail-dialog"
     align-center
     destroy-on-close
